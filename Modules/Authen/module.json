@@ -1,0 +1,11 @@
+{
+    "name": "Authen",
+    "alias": "authen",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Authen\\Providers\\AuthenServiceProvider"
+    ],
+    "files": []
+}
