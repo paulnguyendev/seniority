@@ -1,5 +1,8 @@
 {
     "Blog": true,
     "Authen": true,
-    "User": true
+    "User": true,
+    "Home": true,
+    "Media": true,
+    "MLM": true
 }

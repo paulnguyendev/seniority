@@ -41,5 +41,7 @@ class AuthenAdminController extends Controller
     }
     public function logout(Request $request)
     {
+        $request->session()->flush();
+        return redirect(route("{$this->controllerName}/login"));
     }
 }

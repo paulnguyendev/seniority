@@ -16,12 +16,13 @@ Route::middleware('auth:api')->get('/authen', function (Request $request) {
     return $request->user();
 });
 #_User
-Route::prefix('auth')->group(function() {
+Route::middleware('web')->prefix('auth')->group(function() {
     $routeName = "auth_api";
-    Route::controller(AuthenApiController::class)->group(function () use ($routeName) {
-        Route::post('/register', 'register')->name($routeName . '/register');
-        Route::post('/login', 'login')->name($routeName . '/login');
-        Route::post('/loginAdmin', 'loginAdmin')->name($routeName . '/loginAdmin');
-    });
+    // Route::controller(AuthenApiController::class)->group(function () use ($routeName) {
+    //     Route::post('/register', 'register')->name($routeName . '/register');
+    //     Route::post('/login', 'login')->name($routeName . '/login');
+    //     Route::post('/loginAdmin', 'loginAdmin')->name($routeName . '/loginAdmin');
+ 
+    // });
     //Route::get('/', 'AuthenController@index');
 });

@@ -5,7 +5,21 @@ var global_notice_options = {
     timeOut: 1000,
     positionClass: "toast-bottom-right",
 };
+var global_notice_reload_options = {
+    timeOut: 500,
+    positionClass: "toast-bottom-right",
+    onHidden: function () {
+        window.location.reload();
+    },
+};
 function successNotice(title, msg, custom_options = global_notice_options) {
+    toastr.success(msg, title, custom_options);
+}
+function successNoticeReload(
+    title,
+    msg,
+    custom_options = global_notice_reload_options
+) {
     toastr.success(msg, title, custom_options);
 }
 function warningNotice(title, msg, custom_options = global_notice_options) {

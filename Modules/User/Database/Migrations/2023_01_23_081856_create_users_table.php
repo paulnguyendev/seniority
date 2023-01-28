@@ -13,7 +13,9 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('fullname')->nullable();
+            $table->string('first_name')->nullable();
+            $table->string('middle_name')->nullable();
+            $table->string('last_name')->nullable();
             $table->string('phone')->nullable();
             $table->string('email')->nullable();
             $table->string('username')->nullable();
@@ -27,6 +29,7 @@ return new class extends Migration
             $table->string('code')->nullable();
             $table->integer('parent_id')->nullable();
             $table->json('bank_info')->nullable();
+            $table->json('qrcode')->nullable();
             $table->integer('_lft')->nullable();
             $table->integer('_rgt')->nullable();
             $table->string('status')->default('pending')->nullable();
