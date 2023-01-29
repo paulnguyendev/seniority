@@ -21,7 +21,14 @@
             </div>
             @if (isset($showButton))
                 <div class="buttons">
-                    <a href="{{$btnUrl ?? "#"}}" class="btn btn-primary">Add new</a>
+                    @if (isset($backUrl))
+                        <a href="{{ $backUrl ?? '#' }}" class="btn btn-danger">Back</a>
+                    @endif
+                    @if (isset($btnUrl))
+                    <a href="{{ $btnUrl ?? '#' }}" class="btn btn-primary">Add new</a>
+                    @endif
+                 
+
                 </div>
             @endif
 

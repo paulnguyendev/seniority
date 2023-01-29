@@ -1,19 +1,17 @@
 @extends('admin.master')
-@section('title', 'List of User')
-@section('page_title', 'List of User')
+@section('title', 'User List in trash')
+@section('page_title', 'User List in trash')
 @section('custom_style')
     <link href="{{ asset('obn') }}/css/plugin.css" rel="stylesheet">
 @endsection
 @section('content')
-    @include('admin.templates.page_title', [
-        'showButton' => '1',
-        'btnUrl' => route("{$controllerName}/form"),
-    ])
+    @include('admin.templates.page_title', [])
     <div class="row">
         <div class="col-md-12">
             <div class="card">
                 <div class="card-body">
-                    <table class="table table-xlg datatable-ajax" data-source="{{ route('user_admin/data') }}"
+                    <table class="table table-xlg datatable-ajax"
+                        data-source="{{ route('user_admin/data', ['is_trash' => '1']) }}"
                         data-destroymulti="{{ route('user_admin/trashDestroy') }}">
                         <thead>
                             <tr>
@@ -101,23 +99,8 @@
                 render: function(data) {
                     let xhtml = "";
                     xhtml += `<div class="button-items text-center">`;
-                    xhtml += `<a href="" class="btn btn-primary waves-effect waves-light btn-sm">
-                            <i class="fas fa-link mr-2"></i> Login
-                        </a>`;
-                    xhtml += `  <a href="${data.route_edit}" class="btn btn-info waves-effect waves-light btn-sm">
-                            <i class="fas fa-pencil-alt mr-2"></i> Edit
-                        </a>`;
-                    if (data.is_suppend == '1') {
-                        xhtml += ` <a href="${data.route_suppend}" class="btn btn-success waves-effect waves-light btn-sm suspend-user">
-                            <i class="fas fa-ban mr-2"></i> UnSuspend
-                        </a>`;
-                    } else {
-                        xhtml += ` <a href="${data.route_suppend}" class="btn btn-danger waves-effect waves-light btn-sm suspend-user">
-                            <i class="fas fa-ban mr-2"></i> Suppend
-                        </a>`;
-                    }
-                    xhtml += ` <a href="${data.route_verify}" class="btn btn-warning waves-effect waves-light btn-sm send-mail-verify">
-                            <i class="far fa-envelope mr-2"></i> Send Mail Verify
+                    xhtml += `  <a href="${data.route_restore ?? "#"}" class="btn btn-primary waves-effect waves-light btn-sm restore-item">
+                            <i class="far fa-window-restore mr-2"></i> Restore
                         </a>`;
                     xhtml += `</div>`;
                     return xhtml;
@@ -157,8 +140,6 @@
             ],
         ])`;
         WBDatatables.addFilter(count, '');
-        WBDatatables.addFilter(status, 'select[name=status]');
-        WBDatatables.addFilter(parent, 'select[name=parent_id]');
         WBDatatables.updateActive();
         WBDatatables.showAction();
     </script>

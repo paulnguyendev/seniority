@@ -6,7 +6,7 @@ return [
         'user' => 'user',
         'auth' => 'user/auth',
         'homepage' => '',
-        'code' => 'NS',
+        'code' => 'SM',
     ],
     'mail' => [
         'from' => 'tinidev.com@gmail.com',

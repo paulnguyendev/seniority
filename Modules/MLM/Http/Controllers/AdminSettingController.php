@@ -4,132 +4,113 @@ use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\View;
-use Modules\MLM\Entities\MlmLevelModel as MainModel;
+use Modules\MLM\Entities\MlmSettingModel as MainModel;
 use Illuminate\Support\Facades\Mail;
 use Modules\Authen\Emails\SendVerifyEmail;
 use Modules\MLM\Entities\MlmLevelModel;
-use Modules\MLM\Entities\MlmSettingModel;
 use Modules\MLM\Entities\MlmTypeModel;
-class AdminLevelController extends Controller
+class AdminSettingController extends Controller
 {
     /**
      * Display a listing of the resource.
      * @return Renderable
      */
-    private $pathViewController     = "mlm::pages.admin.level.";
-    private $controllerName         = "mlm_admin_level";
+    private $pathViewController     = "mlm::pages.admin.setting.";
+    private $controllerName         = "mlm_admin_setting";
     private $moduleName         = "mlm";
     private $model;
     private $mlmLevelModel;
     private $mlmTypeModel;
-    private $mlmSettingModel;
     private $params                 = [];
     function __construct()
     {
         $this->model = new MainModel();
         $this->mlmTypeModel = new MlmTypeModel();
         $this->mlmLevelModel = new MlmLevelModel();
-        $this->mlmSettingModel = new MlmSettingModel();
         View::share('controllerName', $this->controllerName);
         View::share('moduleName', $this->moduleName);
     }
     public function index(Request $request)
     {
-        $slug = $request->slug;
-        $mlmType = $this->mlmTypeModel->getItem(['slug' => $slug],['task' => 'slug']);
-        $mlm_type_id = $mlmType['id'];
-        $totalAll = $this->model->whereNull('deleted_at')->where('mlm_type_id', $mlm_type_id)->count();
-        $totalTrash = $this->model->whereNotNull('deleted_at')->where('mlm_type_id', $mlm_type_id)->count();
+        $level_id = $request->level_id;
+        $mlmLevel = $this->mlmLevelModel::findOrFail($level_id);
+        $mlmType = $mlmLevel->type()->first();
+        $totalAll = $this->model->whereNull('deleted_at')->where('mlm_level_id', $level_id)->count();
+        $totalTrash = $this->model->whereNotNull('deleted_at')->where('mlm_level_id', $level_id)->count();
         return view("{$this->pathViewController}index", [
-            'slug' => $slug,
-            'mlmType' => $mlmType,
             'totalAll' => $totalAll,
+            'mlmLevel' => $mlmLevel,
             'totalTrash' => $totalTrash,
+            'level_id' => $level_id,
+            'mlmType' => $mlmType,
         ]);
     }
     public function form(Request $request)
     {
         $id = $request->id;
+        $level_id = $request->level_id;
+        $mlmLevel = $this->mlmLevelModel::findOrFail($level_id);
+        $mlmType = $mlmLevel->type()->first();
+        $levels = $this->mlmLevelModel->listItems(['mlm_type_id' => $mlmType['id']],['task' => 'list']);
         $title = $id ? "Edit Item" : "Add Item";
-        $slug = $request->slug;
-        $mlmType = [];
-        $mlmTypes = $this->mlmTypeModel->listItems([],['task' => 'list']);
-        $item = [];
+        $item = null;
         if($id) {
             $item = $this->model::findOrFail($id);
-            $mlmType = $item->type()->first();
-            $slug = $mlmType['slug'] ?? "";
         }
-        else {
-            $mlmType = $this->mlmTypeModel->getItem(['slug' => $slug],['task' => 'slug']);
-        }
-        $mlm_type_id = $mlmType['id'] ?? "";
-        $mlmLevelsLicence = $this->mlmLevelModel->listItems(['mlm_type_id' => 1],['task' => 'list']);
-        $mlmLevelsNonLicence = $this->mlmLevelModel->listItems(['mlm_type_id' => 2],['task' => 'list']);
         return view("{$this->pathViewController}form", [
             'title' => $title,
-            'slug' => $slug,
-            'mlmType' => $mlmType,
+            'mlmLevel' => $mlmLevel,
+            'level_id' => $level_id,
+            'levels' => $levels,
             'item' => $item,
             'id' => $id,
-            'mlmTypes' => $mlmTypes,
-            'mlmLevelsLicence' => $mlmLevelsLicence,
-            'mlmLevelsNonLicence' => $mlmLevelsNonLicence,
-            'mlm_type_id' => $mlm_type_id,
         ]);
     }
     public function trashIndex(Request $request)
     {
-        $slug = $request->slug;
-        $mlmType = $this->mlmTypeModel->getItem(['slug' => $slug],['task' => 'slug']);
-        $mlm_type_id = $mlmType['id'];
-        $totalAll = $this->model->whereNull('deleted_at')->where('mlm_type_id', $mlm_type_id)->count();
-        $totalTrash = $this->model->whereNotNull('deleted_at')->where('mlm_type_id', $mlm_type_id)->count();
+        $level_id = $request->level_id;
+        $mlmLevel = $this->mlmLevelModel::findOrFail($level_id);
+        $mlmType = $mlmLevel->type()->first();
+        $totalAll = $this->model->whereNull('deleted_at')->where('mlm_level_id', $level_id)->count();
+        $totalTrash = $this->model->whereNotNull('deleted_at')->where('mlm_level_id', $level_id)->count();
         return view("{$this->pathViewController}trash", [
-            'slug' => $slug,
-            'mlmType' => $mlmType,
             'totalAll' => $totalAll,
+            'mlmLevel' => $mlmLevel,
             'totalTrash' => $totalTrash,
+            'level_id' => $level_id,
+            'mlmType' => $mlmType,
         ]);
     }
     public function save(Request $request)
     {
         $params = $request->all();
+        $level_id = $params['mlm_level_id'] ?? "";
         $id = $request->id;
+        $params['redirect'] = "";
         $error = [];
         if (!$params['name']) {
             $error['name'] = "Please enter name";
         }
-        if (!$params['short_name']) {
-            $error['short_name'] = "Please enter short name";
-        }
-        $number_order = $params['number_order'] ?? '';
-        $number_lead =  $params['number_lead'] ?? '';
-        if($params['slug'] == 'licensed') {
-            if ($number_order == ''  ) {
-                $error['number_order'] = "Please enter Number Loans";
-            }
+        if (!$params['commission']) {
+            $error['commission'] = "Please enter Commission";
         }
         else {
-            if ($number_lead == '') {
-                $error['number_lead'] = "Please enter Number Lead";
+            if(!is_numeric($params['commission'])) {
+                $error['commission'] = "Please enter Commission number";
             }
-        }
-      
-       
-        if (!$params['child_id']) {
-            $error['child_id'] = "Please choose Child Level";
         }
         if (empty($error)) {
             $status = 200;
+            $params['created_at'] = date('Y-m-d H:i:s');
             if($id) {
+                $params['id'] = $id;
                 $this->model->saveItem($params, ['task' => 'edit-item']);
-                $msg = "Update MLM Success";
+                $msg = "Update MLM Setting Success";
             }
             else {
-                $msg = "Add MLM Success";
                 $this->model->saveItem($params, ['task' => 'add-item']);
-                $params['redirect'] = route("{$this->controllerName}/index",['slug' => $params['slug'] ?? ""]);
+                $msg = "Add MLM Setting Success";
+                $params['redirect'] = route("{$this->controllerName}/index",['level_id' => $level_id]);
             }
         } else {
             $status  = 400;
@@ -156,7 +137,7 @@ class AdminLevelController extends Controller
     {
         $data = [];
         $params = $request->all();
-        $type_id = isset($params['type_id']) ? $params['type_id'] : $request->mlm_type_id;
+        $level_id = $request->level_id;
         $is_trash = isset($params['is_trash']) ? $params['is_trash'] : "0";
         $draw = isset($params['draw']) ? $params['draw'] : "";
         $start = isset($params['start']) ? $params['start'] : "";
@@ -164,7 +145,7 @@ class AdminLevelController extends Controller
         $search = isset($params['search']) ? $params['search'] : "";
         $searchValue = isset($search['value']) ? $search['value'] : "";
         $paramsData['is_trash'] = $is_trash;
-        $paramsData['mlm_type_id'] = $type_id;
+        $paramsData['level_id'] = $level_id;
         if (!$searchValue) {
             $paramsData['start'] = $start;
             $paramsData['length'] = $length;
@@ -174,33 +155,23 @@ class AdminLevelController extends Controller
             $data = $this->model->listItems($paramsData, ['task' => 'search']);
         }
         $data = $data->toArray();
-        $recordsFiltered = $this->model->where('mlm_type_id', $type_id)->count();
-        $data = array_map(function ($item) {
-            $item['route_edit'] = route("{$this->controllerName}/form", ['id' => $item['id']]);
-            $item['route_remove'] = route("{$this->controllerName}/trash", ['id' => $item['id']]);
-            $item['route_delete'] = route("{$this->controllerName}/delete", ['id' => $item['id']]);
-            $item['route_setting'] = route("mlm_admin_setting/index", ['level_id' => $item['id']]);
-            $item['route_add_setting'] = route("mlm_admin_setting/form", ['level_id' => $item['id']]);
-            $item['route_restore'] = route("{$this->controllerName}/updateField", ['id' => $item['id'],'task' => 'restore']);
-            $item['name'] = "{$item['name']} [ {$item['short_name']} ]";
-            $childId = $item['child_id'] ?? 0;
-            $child = $this->model::find($childId);
-            $childName = $child['name'] ?? "";
-            $number_child = $item['number_child'] ?? "0";
-            $childInfo = $childName ?  "{$number_child} {$childName}" : "";
-            $mlm_type_id = $item['mlm_type_id'];
-            $mlmType = $this->mlmTypeModel::find($mlm_type_id);
-            $mlm_type_slug = $mlmType['slug'] ?? "";
-            $item['number_show'] = $mlm_type_slug == 'licensed' ? $item['number_order'] : $item['number_lead'];
-            $item['child_info'] = $childInfo;
+        $recordsFiltered = $this->model->whereNull('deleted_at')->where('mlm_level_id', $level_id)->count();
+        $data = array_map(function ($item) use ($level_id) {
+            $item['route_edit'] = route("{$this->controllerName}/form", ['id' => $item['id'], 'level_id' => $level_id]);
+            $item['route_remove'] = route("{$this->controllerName}/trash", ['id' => $item['id'], 'level_id' => $level_id]);
+            $item['route_delete'] = route("{$this->controllerName}/delete", ['id' => $item['id'], 'level_id' => $level_id]);
+            $item['route_restore'] = route("{$this->controllerName}/updateField", ['id' => $item['id'],'task' => 'restore', 'level_id' => $level_id]);
+            $commission = $item['commission'];
+            $commission_type = $item['commission_type'];
+            $commission_type = $commission_type == 'percentage' ? "%" : "$";
+            $commission_show = "{$commission} {$commission_type} ";
+            $item['commission_show'] = $commission_show;
+            $commission_group = $item['commission_group'];
+            $mlm_indirect_level_id = $item['mlm_indirect_level_id'];
+            $mlmIndirectLevelName = $mlm_indirect_level_id ? $this->mlmLevelModel::find($mlm_indirect_level_id)->name : "";
+            $commission_group_show =  $commission_group == 'direct' ? "Direct" : "Indirect <br> <small> Level: {$mlmIndirectLevelName} </small>";
+            $item['commission_group_show'] = $commission_group_show;
             $item['created_at'] = date('H:i:s d-m-Y', strtotime($item['created_at']));
-            $settings =  $this->model::find($item['id'])->settings(); 
-            $item['setting_total'] = $this->model::find($item['id'])->settings()->whereNull('deleted_at')->count();
-            $settingDirect = $this->mlmSettingModel->getItem(['mlm_level_id' => $item['id']],['task' => 'mlm_level_id']);
-            $settingDirectCommission= $settingDirect['commission'] ?? 0;
-            $item['settingDirect'] = $settingDirect;
-            $settingDirectCommissionType = !empty($settingDirect) && $settingDirect['commission_type'] == 'percentage' ? "%" : "$";
-            $item['total_payout'] = "{$settingDirectCommission} {$settingDirectCommissionType}";
             return $item;
         }, $data);
         $result = [

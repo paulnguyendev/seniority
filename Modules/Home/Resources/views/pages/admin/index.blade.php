@@ -40,6 +40,24 @@
                         </div>
                     </div>
                 </div>
+             
+                <div class="col-lg-3">
+                    <div class="card ">
+                        <div class="card-body">
+                            <div class="icon-contain">
+                                <div class="row">
+                                    <div class="col-2 align-self-center">
+                                        <i class="fas fa-database text-gradient-primary"></i>
+                                    </div>
+                                    <div class="col-10 text-right">
+                                        <h5 class="mt-0 mb-1">0</h5>
+                                        <p class="mb-0 font-12 text-muted">Leads</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="col-lg-3">
                     <div class="card">
                         <div class="card-body">
@@ -50,24 +68,7 @@
                                     </div>
                                     <div class="col-10 text-right">
                                         <h5 class="mt-0 mb-1">190</h5>
-                                        <p class="mb-0 font-12 text-muted">Order</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3">
-                    <div class="card ">
-                        <div class="card-body">
-                            <div class="icon-contain">
-                                <div class="row">
-                                    <div class="col-2 align-self-center">
-                                        <i class="fas fa-database text-gradient-primary"></i>
-                                    </div>
-                                    <div class="col-10 text-right">
-                                        <h5 class="mt-0 mb-1">$15562</h5>
-                                        <p class="mb-0 font-12 text-muted">Revenue</p>
+                                        <p class="mb-0 font-12 text-muted">Orders</p>
                                     </div>
                                 </div>
                             </div>

@@ -19,6 +19,7 @@ Route::middleware('access.adminDashboard')->prefix($prefix)->group(function() us
         Route::get('/data', 'data')->name($routeName . '/data');
         Route::get('/profile', 'profile')->name($routeName . '/profile');
         Route::get('/form/{id?}', 'form')->name($routeName . '/form');
+        Route::post('/save/{id?}', 'save')->name($routeName . '/save');
         Route::delete('/trash/{id}', 'trash')->name($routeName . '/trash');
         Route::delete('/delete/{id}', 'delete')->name($routeName . '/delete');
         Route::delete('/destroy', 'destroy')->name($routeName . '/destroy');
@@ -28,6 +29,7 @@ Route::middleware('access.adminDashboard')->prefix($prefix)->group(function() us
         Route::post('/suspend/{id?}/{suspend?}', 'suspend')->name($routeName . '/suspend');
         Route::post('/sendMailVerify/{email?}/{token?}', 'sendMailVerify')->name($routeName . '/sendMailVerify');
         Route::get('/list-trash', 'trashIndex')->name($routeName . '/trashIndex');
+        Route::post('/updateField/{task?}/{id?}', 'updateField')->name($routeName . '/updateField');
     });
 });
 $prefix = "user";

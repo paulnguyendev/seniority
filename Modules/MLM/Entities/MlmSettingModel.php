@@ -2,20 +2,20 @@
 namespace Modules\MLM\Entities;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-class MlmLevelModel extends Model
+class MlmSettingModel extends Model
 {
     use HasFactory;
-    protected $table = 'mlm_levels';
+    protected $table = 'mlm_level_settings';
     protected $primaryKey = 'id';
     const CREATED_AT = 'created_at';
     const UPDATED_AT = 'updated_at';
     protected $fieldSearchAccepted = ['email', 'phone', 'fullname'];
-    protected $crudNotAccepted = ['_token','user_id','child_id_licensed','child_id_non_licensed','redirect','slug'];
-    protected $fillable = ['name','short_name','number_order','number_lead','number_child','child_id','mlm_type_id', 'created_at', 'updated_at','deleted_at'];
+    protected $crudNotAccepted = ['_token','user_id','redirect'];
+    protected $fillable = ['name','key','commission','commission_type','commission_group','mlm_level_id','mlm_indirect_level_id', 'created_at', 'updated_at'];
     public function listItems($params = "", $options = "")
     {
         $result = null;
-        $query = $this->select('id','name','short_name','number_order','number_lead','number_child','child_id','mlm_type_id', 'created_at', 'updated_at','deleted_at');
+        $query = $this->select('id','name','key','commission','commission_type','commission_group','mlm_level_id','mlm_indirect_level_id', 'created_at', 'updated_at');
         if ($options['task'] == 'list') {
             if(isset($params['is_trash']) && $params['is_trash'] == '1') {
                 $query = $query->whereNotNull('deleted_at');
@@ -23,8 +23,9 @@ class MlmLevelModel extends Model
             else {
                 $query = $query->whereNull('deleted_at');
             }
-            if(isset($params['mlm_type_id'])) {
-                $query = $query->where('mlm_type_id',$params['mlm_type_id']);
+         
+            if(isset($params['level_id'])) {
+                $query = $query->where('mlm_level_id',$params['level_id']);
             }
             if(isset($params['start']) && isset($params['length'])) {
                 if($params['start'] == 0) {
@@ -55,12 +56,15 @@ class MlmLevelModel extends Model
     }
     public function getItem($params = [], $options = [])
     {
-        $query = $this->select('id', 'name','short_name','number_order','number_lead','number_child','child_id','mlm_type_id', 'created_at', 'updated_at','deleted_at');
+        $query = $this->select('id','name','key','commission','commission_type','commission_group','mlm_level_id','mlm_indirect_level_id', 'created_at', 'updated_at');
         if ($options['task'] == 'id') {
             $result = $query->where('id', $params['id'])->first();
         }
         if ($options['task'] == 'slug') {
             $result = $query->where('slug', $params['slug'])->first();
+        }
+        if ($options['task'] == 'mlm_level_id') {
+            $result = $query->whereNull('deleted_at')->where('mlm_level_id', $params['mlm_level_id'])->first();
         }
         return $result;
     }
@@ -82,16 +86,8 @@ class MlmLevelModel extends Model
             $this->where('id', $params['id'])->delete();
         }
     }
-    public function settings()
+    public function levels()
     {
-        return $this->hasMany(MlmSettingModel::class, 'mlm_level_id', 'id');
-    }
-    public function setting()
-    {
-        return $this->belongsTo(MlmSettingModel::class, 'mlm_level_id', 'id');
-    }
-    public function type()
-    {
-        return $this->belongsTo(MlmTypeModel::class, 'mlm_type_id', 'id');
+        return $this->hasMany(MlmLevelModel::class, 'mlm_level_id', 'id');
     }
 }

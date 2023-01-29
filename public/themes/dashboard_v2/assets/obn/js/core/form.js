@@ -7,11 +7,17 @@ const getFormData = ($form) => {
     return indexed_array;
 };
 const showError = (msg) => {
+    const inputError = $(".form-control.has-error");
+    const helpBlock = inputError.next();
+    if (inputError) {
+        helpBlock.text("");
+        inputError.removeClass('has-error');
+    }
     for (let key in msg) {
         const msg_item = msg[key];
-        const current = jQuery(`input[name='${key}']`);
-        const next = current.next();
-        current.addClass('has-error');
+        const current = jQuery(`.form-control[name='${key}']`);
+        const next = current.parent().find('.help-block');
+        current.addClass("has-error");
         next.text(msg_item);
         // parent = jQuery(`input[name='${key}']`).parent();
         // parent.append(

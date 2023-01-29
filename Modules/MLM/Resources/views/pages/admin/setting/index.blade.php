@@ -1,28 +1,33 @@
 @extends('admin.master')
-@section('title', 'List of User')
-@section('page_title', 'List of User')
+@section('title', 'Setting List')
+@section('page_title', 'Setting List')
 @section('custom_style')
     <link href="{{ asset('obn') }}/css/plugin.css" rel="stylesheet">
 @endsection
 @section('content')
     @include('admin.templates.page_title', [
         'showButton' => '1',
-        'btnUrl' => route("{$controllerName}/form"),
+        'btnUrl' => route("{$controllerName}/form", ['level_id' => $level_id]),
+        'parent' => [
+            'name' => $mlmLevel['name'],
+            'url' => route('mlm_admin_level/index',['slug' => $mlmType['slug']]),
+        ],
+        'backUrl' => route('mlm_admin_level/index',['slug' => $mlmType['slug']]) ,
     ])
     <div class="row">
         <div class="col-md-12">
             <div class="card">
                 <div class="card-body">
-                    <table class="table table-xlg datatable-ajax" data-source="{{ route('user_admin/data') }}"
-                        data-destroymulti="{{ route('user_admin/trashDestroy') }}">
+                    <table class="table table-xlg datatable-ajax"
+                        data-source="{{ route("{$controllerName}/data", ['level_id' => $level_id]) }}"
+                        data-destroymulti="{{ route("{$controllerName}/trashDestroy") }}">
                         <thead>
                             <tr>
                                 <th class="text-center" width="50"><input type="checkbox" bs-type="checkbox"
                                         value="all" id="inputCheckAll"></th>
-                                <th width="100">Avatar</th>
-                                <th>User Info </th>
-                                <th>Sponsor Info </th>
-                                <th class="text-center">Status</th>
+                                <th>Name </th>
+                                <th class="text-center">Commission </th>
+                                <th class="text-center">Commission Group</th>
                                 <th class="text-center">Date</th>
                                 <th class="text-center"></th>
                                 <th class="text-center"></th>
@@ -53,8 +58,15 @@
             {
                 data: null,
                 render: function(data) {
-                    console.log(data);
-                    return WBDatatables.showThumbnail(data.thumbnail);
+                    return (data.name) ? data.name : 'empty';
+                },
+                orderable: false,
+                searchable: false
+            },
+            {
+                data: null,
+                render: function(data) {
+                    return data.commission_show ?? 0;
                 },
                 class: "text-center no-padding-right",
                 orderable: false,
@@ -63,28 +75,14 @@
             {
                 data: null,
                 render: function(data) {
-                    return (data.user_info) ? data.user_info : 'empty';
-                },
-                orderable: false,
-                searchable: false
-            },
-            {
-                data: null,
-                render: function(data) {
-                    return (data.sponsor_info) ? data.sponsor_info : '';
-                },
-                orderable: false,
-                searchable: false
-            },
-            {
-                data: null,
-                render: function(data) {
-                    return (data.status) ? data.status : '';
+                    return data.commission_group_show ?? '';
                 },
                 class: "text-center no-padding-right",
                 orderable: false,
                 searchable: false
             },
+            
+           
             {
                 data: null,
                 name: "published_at",
@@ -101,23 +99,8 @@
                 render: function(data) {
                     let xhtml = "";
                     xhtml += `<div class="button-items text-center">`;
-                    xhtml += `<a href="" class="btn btn-primary waves-effect waves-light btn-sm">
-                            <i class="fas fa-link mr-2"></i> Login
-                        </a>`;
                     xhtml += `  <a href="${data.route_edit}" class="btn btn-info waves-effect waves-light btn-sm">
                             <i class="fas fa-pencil-alt mr-2"></i> Edit
-                        </a>`;
-                    if (data.is_suppend == '1') {
-                        xhtml += ` <a href="${data.route_suppend}" class="btn btn-success waves-effect waves-light btn-sm suspend-user">
-                            <i class="fas fa-ban mr-2"></i> UnSuspend
-                        </a>`;
-                    } else {
-                        xhtml += ` <a href="${data.route_suppend}" class="btn btn-danger waves-effect waves-light btn-sm suspend-user">
-                            <i class="fas fa-ban mr-2"></i> Suppend
-                        </a>`;
-                    }
-                    xhtml += ` <a href="${data.route_verify}" class="btn btn-warning waves-effect waves-light btn-sm send-mail-verify">
-                            <i class="far fa-envelope mr-2"></i> Send Mail Verify
                         </a>`;
                     xhtml += `</div>`;
                     return xhtml;
@@ -144,21 +127,17 @@
             },
         };
         let productDatatables = WBDatatables.init('.datatable-ajax', columnDatas, option);
-        var status = `@include('user::pages.admin.filter_status')`;
-        var parent = `@include('user::pages.admin.filter_parent')`;
-        var count = `@include('user::pages.admin.count_item', [
+        var count = `@include("admin.templates.count_item", [
             'all' => [
-                'url' => route("{$moduleName}_admin/index"),
+                'url' => route("{$controllerName}/index",['level_id' => $level_id]),
                 'total' => $totalAll,
             ],
             'trash' => [
-                'url' => route("{$moduleName}_admin/trashIndex"),
+                'url' => route("{$controllerName}/trashIndex", ['level_id' => $level_id]),
                 'total' => $totalTrash,
             ],
         ])`;
         WBDatatables.addFilter(count, '');
-        WBDatatables.addFilter(status, 'select[name=status]');
-        WBDatatables.addFilter(parent, 'select[name=parent_id]');
         WBDatatables.updateActive();
         WBDatatables.showAction();
     </script>

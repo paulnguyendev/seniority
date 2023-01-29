@@ -13,7 +13,7 @@ class UserModel extends Model
     const UPDATED_AT = 'updated_at';
     protected $fieldSearchAccepted = ['email', 'phone', 'fullname'];
     protected $crudNotAccepted = ['_token','user_id'];
-    protected $fillable = ['first_name', 'middle_name', 'last_name', 'phone', 'email', 'username', 'password', 'type', 'birthday', 'gender', 'thumbnail', 'address', 'token', 'code', 'bank_info', 'qrcode', '_lft', '_rgt', 'status', 'created_at', 'updated_at','email_verified_at','is_suppend','deleted_at'];
+    protected $fillable = ['first_name', 'middle_name', 'last_name', 'phone', 'email', 'username', 'password', 'type', 'birthday', 'gender', 'thumbnail', 'address', 'token', 'code', 'bank_info', 'qrcode', '_lft', '_rgt', 'status', 'created_at', 'updated_at','email_verified_at','is_suppend','deleted_at','mlm_level_id','mlm_type_id'];
     // protected static function newFactory()
     // {
     //     return \Modules\User\Database\factories\UserModelFactory::new();
@@ -21,9 +21,21 @@ class UserModel extends Model
     public function listItems($params = "", $options = "")
     {
         $result = null;
-        $query = $this->select('id', 'first_name', 'middle_name', 'last_name', 'phone', 'email', 'username', 'type', 'birthday', 'gender', 'thumbnail', 'address', 'token', 'code', 'qrcode', 'status', 'created_at', 'updated_at','email_verified_at','is_suppend','deleted_at');
+        $query = $this->select('id', 'first_name', 'middle_name', 'last_name', 'phone', 'email', 'username', 'type', 'birthday', 'gender', 'thumbnail', 'address', 'token', 'code', 'qrcode', 'status', 'created_at', 'updated_at','email_verified_at','is_suppend','deleted_at','mlm_level_id','mlm_type_id');
         if ($options['task'] == 'list') {
-            $query = $query->whereNull('deleted_at');
+            
+            if(isset($params['is_trash']) && $params['is_trash'] == '1') {
+                $query = $query->whereNotNull('deleted_at');
+            }
+            else {
+                $query = $query->whereNull('deleted_at');
+            }
+            if(isset($params['type'])) {
+                $query = $query->where('type',$params['type']);
+            }
+            if(isset($params['not_id'])) {
+                $query = $query->where('id','!=',$params['not_id']);
+            }
             if(isset($params['start']) && isset($params['length'])) {
                 if($params['start'] == 0) {
                     $result = $query->orderBy('id', 'desc')->get();
@@ -37,7 +49,6 @@ class UserModel extends Model
             }
         }
         if ($options['task'] == 'search') {
-            
             $result = $query->where('email', 'LIKE', "%{$params['title']}%")
             ->orWhere('phone', 'LIKE', "%{$params['title']}%")
             ->orWhere('first_name', 'LIKE', "%{$params['title']}%")
@@ -48,7 +59,7 @@ class UserModel extends Model
     }
     public function getItem($params = [], $options = [])
     {
-        $query = $this->select('id', 'first_name', 'middle_name', 'last_name', 'phone', 'email', 'username', 'password', 'type', 'birthday', 'gender', 'thumbnail', 'address', 'token', 'code', 'bank_info', 'qrcode', '_lft', '_rgt', 'status', 'created_at', 'updated_at','email_verified_at','is_suppend');
+        $query = $this->select('id', 'first_name', 'middle_name', 'last_name', 'phone', 'email', 'username', 'password', 'type', 'birthday', 'gender', 'thumbnail', 'address', 'token', 'code', 'bank_info', 'qrcode', '_lft', '_rgt', 'status', 'created_at', 'updated_at','email_verified_at','is_suppend','mlm_level_id','mlm_type_id');
         if ($options['task'] == 'login') {
             $result = $query->where('username', $params['username'])->where('password', md5($params['password']))->first();
         }

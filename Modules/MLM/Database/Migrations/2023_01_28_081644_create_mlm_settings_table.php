@@ -24,6 +24,7 @@ return new class extends Migration
             // mlm_indirect_level_id
             $table->unsignedBigInteger('mlm_indirect_level_id')->nullable();
             $table->foreign('mlm_indirect_level_id')->references('id')->on('mlm_levels')->onDelete('cascade');
+            $table->dateTime('deleted_at')->nullable();
             $table->timestamps();
         });
     }

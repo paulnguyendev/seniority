@@ -21,14 +21,14 @@
                                 <th class="text-center" width="50"><input type="checkbox" bs-type="checkbox"
                                         value="all" id="inputCheckAll"></th>
                                 <th>Name </th>
-                                <th class="text-center">Short Name </th>
                                 @if ($slug == 'licensed')
                                     <th class="text-center">Number Loans</th>
                                 @else
                                     <th class="text-center">Number Lead</th>
                                 @endif
-                                <th class="text-center">Child Info</th>
+                                <th class="text-center">Child Level</th>
                                 <th class="text-center">Total User</th>
+                                <th class="text-center">Total Payout</th>
                                 <th class="text-center">Date</th>
                                 <th class="text-center"></th>
                                 <th class="text-center"></th>
@@ -67,15 +67,6 @@
             {
                 data: null,
                 render: function(data) {
-                    return (data.short_name) ? data.short_name : '';
-                },
-                class: "text-center no-padding-right",
-                orderable: false,
-                searchable: false
-            },
-            {
-                data: null,
-                render: function(data) {
                     return data.number_show ?? 0;
                 },
                 class: "text-center no-padding-right",
@@ -102,6 +93,15 @@
             },
             {
                 data: null,
+                render: function(data) {
+                    return data.total_payout ?? 0;
+                },
+                class: "text-center no-padding-right",
+                orderable: false,
+                searchable: false
+            },
+            {
+                data: null,
                 name: "published_at",
                 render: function(data) {
                     return (!data.created_at) ? '' : data.created_at;
@@ -118,6 +118,12 @@
                     xhtml += `<div class="button-items text-center">`;
                     xhtml += `  <a href="${data.route_edit}" class="btn btn-info waves-effect waves-light btn-sm">
                             <i class="fas fa-pencil-alt mr-2"></i> Edit
+                        </a>`;
+                    xhtml += `  <a href="${data.route_setting}" class="btn btn-warning waves-effect waves-light btn-sm">
+                            <i class="mdi mdi-settings mr-2"></i> Setting List <span class="badge badge-pill badge-outline-primary">${data.setting_total ?? 0}</span>
+                        </a>`;
+                    xhtml += `  <a href="${data.route_add_setting}" class="btn btn-danger waves-effect waves-light btn-sm">
+                            <i class="mdi mdi-plus-circle-outline mr-2"></i> Add Setting
                         </a>`;
                     xhtml += `</div>`;
                     return xhtml;
@@ -144,10 +150,9 @@
             },
         };
         let productDatatables = WBDatatables.init('.datatable-ajax', columnDatas, option);
-       
-        var count = `@include("admin.templates.count_item", [
+        var count = `@include('admin.templates.count_item', [
             'all' => [
-                'url' => route("{$controllerName}/index",['slug' => $slug]),
+                'url' => route("{$controllerName}/index", ['slug' => $slug]),
                 'total' => $totalAll,
             ],
             'trash' => [

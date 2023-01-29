@@ -11,11 +11,11 @@ class MlmTypeModel extends Model
     const UPDATED_AT = 'updated_at';
     protected $fieldSearchAccepted = ['email', 'phone', 'fullname'];
     protected $crudNotAccepted = ['_token','user_id'];
-    protected $fillable = ['name','class', 'created_at', 'updated_at'];
+    protected $fillable = ['name','class', 'created_at', 'updated_at','slug'];
     public function listItems($params = "", $options = "")
     {
         $result = null;
-        $query = $this->select('id','name','class', 'created_at', 'updated_at');
+        $query = $this->select('id','name','class', 'created_at', 'updated_at','slug');
         if ($options['task'] == 'list') {
             $query = $query->whereNull('deleted_at');
             if(isset($params['start']) && isset($params['length'])) {
@@ -39,7 +39,7 @@ class MlmTypeModel extends Model
     }
     public function getItem($params = [], $options = [])
     {
-        $query = $this->select('id', 'name','class', 'created_at', 'updated_at');
+        $query = $this->select('id', 'name','class', 'created_at', 'updated_at','slug');
         if ($options['task'] == 'id') {
             $result = $query->where('id', $params['id'])->first();
         }
@@ -68,6 +68,6 @@ class MlmTypeModel extends Model
     }
     public function levels()
     {
-        return $this->hasMany(MlmLevelModel::class, 'user_id', 'id');
+        return $this->hasMany(MlmLevelModel::class, 'mlm_type_id', 'id');
     }
 }

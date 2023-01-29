@@ -97,13 +97,7 @@
                                     <li><a href="{{route('mlm_admin_level/index',['slug' => 'non-licensed'])}}">Non-License </a></li>
                                 </ul>
                             </li>
-                            <li class="has-submenu">
-                                <a href="#">Income Setting</a>
-                                <ul class="submenu">
-                                    <li><a href="{{route('mlm_admin/index',['slug' => 'licensed'])}}">License</a></li>
-                                    <li><a href="{{route('mlm_admin/index',['slug' => 'non-licensed'])}}">Non-License </a></li>
-                                </ul>
-                            </li>
+                          
                         </ul>
                     </li>
                 </ul>
