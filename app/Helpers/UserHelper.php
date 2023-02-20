@@ -1,5 +1,6 @@
 <?php
 namespace App\Helpers;
+use Modules\Agent\Entities\AgentModel;
 use Modules\User\Entities\UserModel;
 class UserHelper {
     public static function getUserInfo($user_id = "", $key = "") {
@@ -12,12 +13,18 @@ class UserHelper {
         if(!$user_id) {
             if ($prefixType == 'admin') {
                 $userSession = session()->get('adminInfo');
+            } elseif ($prefixType == 'agent') {
+                $userSession = session()->get('agentInfo');
             } else {
                 $userSession = session()->get('userInfo');
             }
             $userSession = array_shift($userSession) ?? [];
             $user_id = $userSession->id;
         }
+        if($prefixType == 'agent' ) {
+            $model = new AgentModel();
+        }
+       
         $user = $model::find($user_id);
         $thumbnail = null;
         if ($user) {

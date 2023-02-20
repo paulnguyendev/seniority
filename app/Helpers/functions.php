@@ -1,7 +1,5 @@
 <?php
-
 use Modules\User\Entities\UserModel;
-
 if (!function_exists('get_logo')) {
     function get_logo()
     {
@@ -50,5 +48,30 @@ if (!function_exists('random_code')) {
             $code = random_int(100000, 999999);
         } while (UserModel::where("code", "=", $code)->first());
         return config('obn.prefix.code') . $code;
+    }
+}
+if (!function_exists('clean')) {
+    function clean($string)
+    {
+        $t = $string;
+        $specChars = array(
+            ' ' => '-',    '!' => '',    '"' => '',
+            '#' => '',    '$' => '',    '%' => '',
+            '&' => '',    '\'' => '',   '(' => '',
+            ')' => '',    '*' => '',    '+' => '',
+            ',' => '',    '₹' => '',    '.' => '',
+            '/-' => '',    ':' => '',    ';' => '',
+            '<' => '',    '=' => '',    '>' => '',
+            '?' => '',    '@' => '',    '[' => '',
+            '\\' => '',   ']' => '',    '^' => '',
+            '_' => '',    '`' => '',    '{' => '',
+            '|' => '',    '}' => '',    '~' => '',
+            '-----' => '-',    '----' => '-',    '---' => '-',
+            '/' => '',    '--' => '-',   '/_' => '-', '-' => ''
+        );
+        foreach ($specChars as $k => $v) {
+            $t = str_replace($k, $v, $t);
+        }
+        return $t;
     }
 }

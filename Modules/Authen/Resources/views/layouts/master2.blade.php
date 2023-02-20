@@ -21,7 +21,7 @@
     <link href="{{ asset('themes/dashboard_v2') }}/assets/obn/app.css?ver={{time()}}" rel="stylesheet" type="text/css">
 </head>
 
-<body>
+<body class="@yield('body_class','default-dashboard')">
     <!-- Begin page -->
     <div class="accountbg"></div>
     <div class="wrapper-page">
@@ -46,6 +46,9 @@
     <script src="{{ asset('themes/dashboard_v2') }}/assets/js/jquery.slimscroll.js"></script>
     <script src="{{ asset('themes/dashboard_v2') }}/assets/js/jquery.nicescroll.js"></script>
     <script src="{{ asset('themes/dashboard_v2') }}/assets/js/jquery.scrollTo.min.js"></script>
+     <!-- Bootstrap inputmask js -->
+     <script src="{{ asset('themes/dashboard_v2') }}/assets/plugins/bootstrap-inputmask/bootstrap-inputmask.min.js"></script>
+     <script src="{{ asset('themes/dashboard_v2') }}/assets/pages/form-mask.init.js"></script>
     <!-- KNOB JS -->
     <script src="{{ asset('themes/dashboard_v2') }}/assets/plugins/jquery-knob/excanvas.js"></script>
     <script src="{{ asset('themes/dashboard_v2') }}/assets/plugins/jquery-knob/jquery.knob.js"></script>

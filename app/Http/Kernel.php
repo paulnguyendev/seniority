@@ -68,5 +68,6 @@ class Kernel extends HttpKernel
         'check.login_admin' => \Modules\Authen\Http\Middleware\CheckLoginAdmin::class,
         'access.adminDashboard' => \Modules\Authen\Http\Middleware\AccessAdminDashboard::class,
         'access.userDashboard' => \Modules\Authen\Http\Middleware\AccessUserDashboard::class,
+        'access.agentDashboard' => \Modules\Authen\Http\Middleware\AccessAgentDashboard::class,
     ];
 }

@@ -4,5 +4,6 @@
     "User": true,
     "Home": true,
     "Media": true,
-    "MLM": true
+    "MLM": true,
+    "Agent": true
 }
