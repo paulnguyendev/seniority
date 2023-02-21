@@ -1,4 +1,6 @@
 <?php
+
+use Modules\Agent\Entities\AgentModel;
 use Modules\User\Entities\UserModel;
 if (!function_exists('get_logo')) {
     function get_logo()
@@ -16,6 +18,12 @@ if (!function_exists('get_admin_url')) {
     function get_admin_url()
     {
         return route('home_admin/index');
+    }
+}
+if (!function_exists('get_agent_url')) {
+    function get_agent_url()
+    {
+        return route('dashboard_agent/index');
     }
 }
 if (!function_exists('get_thumbnail_url')) {
@@ -46,8 +54,17 @@ if (!function_exists('random_code')) {
     {
         do {
             $code = random_int(100000, 999999);
-        } while (UserModel::where("code", "=", $code)->first());
+        } while (AgentModel::where("code", "=", $code)->first());
         return config('obn.prefix.code') . $code;
+    }
+}
+if (!function_exists('random_verify_code')) {
+    function random_verify_code()
+    {
+        do {
+            $code = random_int(100000, 999999);
+        } while (AgentModel::where("verify_code", "=", $code)->first());
+        return  $code;
     }
 }
 if (!function_exists('clean')) {

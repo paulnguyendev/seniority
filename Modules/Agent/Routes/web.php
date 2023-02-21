@@ -11,8 +11,7 @@
 */
 use Illuminate\Support\Facades\Route;
 use Modules\Agent\Http\Controllers\AdminManageController;
-
-$module = "agent";
+$module = "manage";
 $prefix = "admin";
 Route::middleware('access.adminDashboard')->prefix($prefix)->group(function() use($prefix, $module) {
     Route::prefix($module . "/manage")->controller(AdminManageController::class)->group(function () use($module, $prefix) {
@@ -28,12 +27,19 @@ Route::middleware('access.adminDashboard')->prefix($prefix)->group(function() us
         Route::delete('/trashDestroy', 'trashDestroy')->name($routeName . '/trashDestroy');
         Route::get('/{level_id?}/list-trash', 'trashIndex')->name($routeName . '/trashIndex');
     });
- 
 });
-$prefix = "dashboard";
-Route::middleware('access.agentDashboard')->prefix( $module . "/" . $prefix)->group(function() use($prefix, $module) {
-    Route::controller(UserManageUserController::class)->group(function () use($module, $prefix) {
+$prefix = "agent";
+Route::middleware('access.agentDashboard')->prefix($prefix)->group(function() use($prefix, $module) {
+    Route::prefix($module)->controller(ManageAgentController::class)->group(function () use($module, $prefix) {
         $routeName = "{$module}_{$prefix}";
         Route::get('/', 'index')->name($routeName . '/index');
+        Route::get('/data', 'data')->name($routeName . '/data');
+        Route::post('/save/{id?}', 'save')->name($routeName . '/save');
+        Route::post('/updateField/{task?}/{id?}', 'updateField')->name($routeName . '/updateField');
+        Route::delete('/trash/{id}', 'trash')->name($routeName . '/trash');
+        Route::delete('/delete/{id}', 'delete')->name($routeName . '/delete');
+        Route::delete('/destroy', 'destroy')->name($routeName . '/destroy');
+        Route::delete('/trashDestroy', 'trashDestroy')->name($routeName . '/trashDestroy');
+        Route::get('/list-trash', 'trashIndex')->name($routeName . '/trashIndex');
     });
 });

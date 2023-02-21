@@ -1,9 +1,7 @@
 <?php
-
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
-
 return new class extends Migration
 {
     /**
@@ -32,14 +30,12 @@ return new class extends Migration
             $table->string('_rgt')->nullable();
             $table->enum('type',['licensed','non-licensed'])->nullable();
             $table->enum('is_suppend',['0','1'])->default('0')->nullable();
-            $table->dateTime('email_verified_at');
-            $table->dateTime('deleted_at');
-            
-
+            $table->dateTime('email_verified_at')->nullable();
+            $table->dateTime('deleted_at')->nullable();
+            $table->string('verify_code')->nullable();
             $table->timestamps();
         });
     }
-
     /**
      * Reverse the migrations.
      *

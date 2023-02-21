@@ -1,6 +1,7 @@
 <?php
 namespace App\Helpers;
 use Modules\Agent\Entities\AgentModel;
+use Modules\Staff\Entities\StaffModel;
 use Modules\User\Entities\UserModel;
 class UserHelper {
     public static function getUserInfo($user_id = "", $key = "") {
@@ -15,7 +16,11 @@ class UserHelper {
                 $userSession = session()->get('adminInfo');
             } elseif ($prefixType == 'agent') {
                 $userSession = session()->get('agentInfo');
-            } else {
+            }
+            elseif ($prefixType == 'staff') {
+                $userSession = session()->get('staffInfo');
+            } 
+            else {
                 $userSession = session()->get('userInfo');
             }
             $userSession = array_shift($userSession) ?? [];
@@ -23,6 +28,9 @@ class UserHelper {
         }
         if($prefixType == 'agent' ) {
             $model = new AgentModel();
+        }
+        elseif($prefixType == 'staff') {
+            $model = new StaffModel();
         }
        
         $user = $model::find($user_id);

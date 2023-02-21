@@ -5,5 +5,7 @@
     "Home": true,
     "Media": true,
     "MLM": true,
-    "Agent": true
+    "Agent": true,
+    "Dashboard": true,
+    "Staff": true
 }

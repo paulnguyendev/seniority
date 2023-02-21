@@ -9,7 +9,7 @@
             </div>
             <h1 class="text-center title-auth">Agent Login</h1>
             <div class="p-3">
-                <form class="form-horizontal m-t-20" id="form-login" action="{{ route('auth_api/loginAgent') }}"
+                <form class="form-horizontal m-t-20" id="form-login" action="{{ route('auth_agent/postLogin') }}"
                     method="post">
                     <div class="form-group row">
                         <div class="col-12">
@@ -36,7 +36,7 @@
                         </div>
                         <div class="col-sm-5 m-t-20">
                             <a href="{{route("{$controllerName}/register")}}" class="text-muted"><i class="mdi mdi-account-circle"></i>
-                                <small>Create an account ?</small></a>
+                                <small>Sign Up ?</small></a>
                         </div>
                     </div>
                 </form>
@@ -66,9 +66,7 @@
                         showError(msg);
                     } else {
                         formLogin.removeClass('has-error');
-                        swal("Notification", msg, "success").then(() => {
-                            window.location.href = response.redirect;
-                        });
+                        window.location.href = response.redirect;
                     }
                 },
                 complete: function() {
