@@ -3,7 +3,7 @@
         <div class="container-fluid">
             <!-- Logo container-->
             <div class="logo">
-                <a href="{{ route('dashboard_agent/index') }}" class="logo">
+                <a href="{{ get_staff_url() }}" class="logo">
                     <img src="{{ get_logo() }}" alt="" height="50">
                 </a>
             </div>
@@ -52,10 +52,10 @@
                 <!-- Navigation Menu-->
                 <ul class="navigation-menu">
                     <li class="has-submenu">
-                        <a href="{{ get_agent_url() }}"><i class="dripicons-device-desktop"></i>Dashboard</a>
+                        <a href="{{ get_staff_url() }}"><i class="dripicons-device-desktop"></i>Dashboard</a>
                     </li>
                     <li>
-                        <a href="{{route('agent_agent/index')}}"><i class="dripicons-blog"></i>Manage Agents</a>
+                        <a href="{{route('agent_staff/index')}}"><i class="dripicons-blog"></i>Manage Agents</a>
                         {{-- <ul class="submenu">
                             <li>
                                 <a href="{{route('user_admin/index')}}">List of Agent</a>

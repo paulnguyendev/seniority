@@ -1,5 +1,4 @@
 <?php
-
 use Modules\Agent\Entities\AgentModel;
 use Modules\User\Entities\UserModel;
 if (!function_exists('get_logo')) {
@@ -24,6 +23,24 @@ if (!function_exists('get_agent_url')) {
     function get_agent_url()
     {
         return route('dashboard_agent/index');
+    }
+}
+if (!function_exists('get_staff_url')) {
+    function get_staff_url()
+    {
+        return route('dashboard_staff/index');
+    }
+}
+if (!function_exists('show_phone')) {
+    function show_phone($phone)
+    {
+        $phone = "+1{$phone}";
+        $result = null;
+        if(  preg_match( '/^\+\d(\d{3})(\d{3})(\d{4})$/', $phone,  $matches ) )
+        {
+            $result = "(" . $matches[1] . ") "  .$matches[2] . '-' . $matches[3];
+            return $result;
+        }
     }
 }
 if (!function_exists('get_thumbnail_url')) {
@@ -90,5 +107,18 @@ if (!function_exists('clean')) {
             $t = str_replace($k, $v, $t);
         }
         return $t;
+    }
+}
+if (!function_exists('show_agent_type')) {
+    function show_agent_type($status = "")
+    {
+        $xhtml_status = null;
+        if($status) {
+            $tpl_status = config('obn.agent_type');
+            $current_status = isset($tpl_status[$status]) ? $tpl_status[$status] : $tpl_status['non-licensed'];
+            $xhtml_status = sprintf('<span class = "badge badge-boxed  %s">%s</span>', $current_status['class'], $current_status['name']);
+        }
+       
+        return $xhtml_status;
     }
 }

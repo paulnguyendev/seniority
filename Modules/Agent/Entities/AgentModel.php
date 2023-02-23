@@ -11,9 +11,9 @@ class AgentModel extends Model
     protected $primaryKey = 'id';
     const CREATED_AT = 'created_at';
     const UPDATED_AT = 'updated_at';
-    protected $fieldSearchAccepted = ['email', 'phone', 'fullname'];
-    protected $crudNotAccepted = ['_token','user_id','sponsor_id'];
-    protected $fillable = ['code','first_name', 'middle_name', 'last_name', 'mobile', 'email', 'username', 'password', 'status','token','thumbnail','qrcode','parent_id','_lft','_rgt','type','is_suppend','email_verified_at','deleted_at', 'verify_code', 'created_at','updated_at'];
+    protected $fieldSearchAccepted = ['email', 'mobile', 'first_name', 'middle_name', 'last_name', 'code'];
+    protected $crudNotAccepted = ['_token', 'user_id', 'sponsor_id'];
+    protected $fillable = ['code', 'first_name', 'middle_name', 'last_name', 'mobile', 'email', 'username', 'password', 'status', 'token', 'thumbnail', 'qrcode', 'parent_id', '_lft', '_rgt', 'type', 'is_suppend', 'email_verified_at', 'deleted_at', 'verify_code', 'created_at', 'updated_at', 'is_root'];
     // protected static function newFactory()
     // {
     //     return \Modules\User\Database\factories\UserModelFactory::new();
@@ -21,45 +21,65 @@ class AgentModel extends Model
     public function listItems($params = "", $options = "")
     {
         $result = null;
-        $query = $this->select('id', 'code','first_name', 'middle_name', 'last_name', 'mobile', 'email', 'username', 'password', 'status','token','thumbnail','qrcode','parent_id','_lft','_rgt','type','is_suppend','email_verified_at','deleted_at','created_at','updated_at','verify_code');
-        if ($options['task'] == 'list') {
-            
-            if(isset($params['is_trash']) && $params['is_trash'] == '1') {
-                $query = $query->whereNotNull('deleted_at');
+        $query = $this->select('id', 'code', 'first_name', 'middle_name', 'last_name', 'mobile', 'email', 'username', 'status', 'token', 'thumbnail', 'qrcode', 'parent_id', '_lft', '_rgt', 'type', 'is_suppend', 'email_verified_at', 'deleted_at', 'created_at', 'updated_at', 'verify_code', 'is_root');
+        if ($options['task'] == 'all') {
+            if (isset($params['not_id'])) {
+                $query = $query->where('id', '!=', $params['not_id']);
             }
-            else {
+            if (isset($params['is_trash']) && $params['is_trash'] == '1') {
+                $query = $query->whereNotNull('deleted_at');
+            } else {
                 $query = $query->whereNull('deleted_at');
             }
-            if(isset($params['type'])) {
-                $query = $query->where('type',$params['type']);
+            $result = $query->orderBy('id', 'desc')->get();
+        }
+        if ($options['task'] == 'list') {
+            if (isset($params['is_trash']) && $params['is_trash'] == '1') {
+                $query = $query->whereNotNull('deleted_at');
+            } else {
+                $query = $query->whereNull('deleted_at');
             }
-            if(isset($params['not_id'])) {
-                $query = $query->where('id','!=',$params['not_id']);
+            $query = $query->where('is_root', '0');
+            if (isset($params['not_id'])) {
+                $query = $query->where('id', '!=', $params['not_id']);
             }
-            if(isset($params['start']) && isset($params['length'])) {
-                if($params['start'] == 0) {
-                    $result = $query->orderBy('id', 'desc')->get();
+            if(isset($params['status'])) {
+                if($params['status']) {
+                    $query = $query->where('status', $params['status']);
                 }
-                else {
+            }
+            if(isset($params['parent_id'])) {
+                if($params['parent_id']) {
+                    $query = $query->where('parent_id', $params['parent_id']);
+                }
+                
+            }
+            if (isset($params['start']) && isset($params['length'])) {
+                if ($params['start'] == 0) {
+                    $result = $query->orderBy('id', 'desc')->get();
+                } else {
                     $result = $query->orderBy('id', 'desc')->skip($params['start'])->take($params['length'])->get();
                 }
-            }
-            else {
+            } else {
                 $result = $query->orderBy('id', 'desc')->get();
             }
         }
         if ($options['task'] == 'search') {
-            $result = $query->where('email', 'LIKE', "%{$params['title']}%")
-            ->orWhere('phone', 'LIKE', "%{$params['title']}%")
-            ->orWhere('first_name', 'LIKE', "%{$params['title']}%")
-            ->orWhere('last_name', 'LIKE', "%{$params['title']}%")
-            ->orderBy('id', 'desc')->get();
+            $search = $params['title'] ?? "";
+            $query = $query->where('email', 'LIKE', "%{$search}%")
+                ->orWhere('code', 'LIKE', "%{$search}%")
+                ->orWhere('mobile', 'LIKE', "%{$search}%")
+                ->orWhere('username', 'LIKE', "%{$search}%")
+                ->orWhere('first_name', 'LIKE', "%{$search}%")
+                ->orWhere('middle_name', 'LIKE', "%{$search}%")
+                ->orWhere('last_name', 'LIKE', "%{$search}%");
+            $result = $query->whereNull('deleted_at')->where('is_root', '0')->orderBy('id', 'desc')->get();
         }
         return $result;
     }
     public function getItem($params = [], $options = [])
     {
-        $query = $this->select('id','code','first_name', 'middle_name', 'last_name', 'mobile', 'email', 'username', 'password', 'status','token','thumbnail','qrcode','parent_id','_lft','_rgt','type','is_suppend','email_verified_at','deleted_at','created_at','updated_at','verify_code');
+        $query = $this->select('id', 'code', 'first_name', 'middle_name', 'last_name', 'mobile', 'email', 'username', 'password', 'status', 'token', 'thumbnail', 'qrcode', 'parent_id', '_lft', '_rgt', 'type', 'is_suppend', 'email_verified_at', 'deleted_at', 'created_at', 'updated_at', 'verify_code', 'is_root');
         if ($options['task'] == 'login') {
             $result = $query->where('username', $params['username'])->where('password', md5($params['password']))->first();
         }
@@ -67,7 +87,7 @@ class AgentModel extends Model
             $result = $query->where('id', $params['user_id'])->first();
         }
         if ($options['task'] == 'code') {
-            $result = $query->where('code', $params['code'])->where('status','active')->first();
+            $result = $query->where('code', $params['code'])->where('status', 'active')->first();
         }
         if ($options['task'] == 'email') {
             $result = $query->where('email', $params['email'])->first();

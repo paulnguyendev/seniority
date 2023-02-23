@@ -262,10 +262,14 @@ class AuthenAgentController extends Controller
         return $params;
     }
     public function quickLogin(Request $request) {
+        $request->session()->forget('agentInfo');
         $token = $request->token;
         $item = $this->model->getItem(['token' => $token],['task' => 'token']);
+      
         if($item) {
             $request->session()->push('agentInfo', $item);
+            $agentInfo = session('agentInfo');
+           
             return redirect()->route('dashboard_agent/index');
         }
         else {

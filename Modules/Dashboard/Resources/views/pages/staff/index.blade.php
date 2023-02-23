@@ -1,7 +1,7 @@
-@extends('agent.master')
+@extends('staff.master')
 @section('content')
     <!-- Page-Title -->
-    @include('agent.templates.page_title')
+    @include('staff.templates.page_title')
     <!-- end page title end breadcrumb -->
     <div class="row">
         <div class="col-lg-12">

@@ -86,4 +86,14 @@ return [
             'income' => ['name' => 'Doanh thu'],
         ],
     ],
+    'agent_type' => [
+        'licensed' => [
+            'name' => 'Licensed',
+            'class' => 'badge-soft-warning',
+        ],
+        'non-licensed' => [
+            'name' => 'Non Licensed',
+            'class' => 'badge-soft-primary',
+        ],
+    ],
 ];
