@@ -3,7 +3,7 @@
 namespace App\Http;
 
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
-
+use Modules\Authen\Http\Middleware\AccessAgentDashboard;
 
 class Kernel extends HttpKernel
 {
@@ -70,7 +70,8 @@ class Kernel extends HttpKernel
         'check.login_staff' => \Modules\Authen\Http\Middleware\CheckStaffAgent::class,
         'access.adminDashboard' => \Modules\Authen\Http\Middleware\AccessAdminDashboard::class,
         'access.userDashboard' => \Modules\Authen\Http\Middleware\AccessUserDashboard::class,
-        'access.agentDashboard' => \Modules\Authen\Http\Middleware\AccessAgentDashboard::class,
+        'access.licenseAgentDashboard' => \App\Http\Middleware\AccessLicenceAgentDashboard::class,
+        'access.nonLicenseAgentDashboard' => \App\Http\Middleware\AccessNonLicenceAgentDashboard::class,
         'access.staffDashboard' => \Modules\Authen\Http\Middleware\AccessStaffDashboard::class,
     ];
 }

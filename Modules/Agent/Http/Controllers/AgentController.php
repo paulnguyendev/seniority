@@ -14,7 +14,7 @@ class AgentController extends Controller
      */
     public function index()
     {
-        return view('agent::index');
+        return "!23";
     }
 
     /**

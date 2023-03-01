@@ -1,10 +1,10 @@
 {
     "Blog": true,
     "Authen": true,
-    "User": true,
+    "User": false,
     "Home": true,
     "Media": true,
-    "MLM": true,
+    "MLM": false,
     "Agent": true,
     "Dashboard": true,
     "Staff": true,
