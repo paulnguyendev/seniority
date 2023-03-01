@@ -27,6 +27,9 @@ Route::get('/', function () {
 // });
 $prefix = "agents";
 Route::prefix($prefix)->group(function () use($prefix) {
+   Route::get('/', function () {
+      return "Agents Area";
+   });
    $prefix_group = "license";
    Route::prefix($prefix_group)->group(function () use($prefix,$prefix_group) {
       // Fai login mới vào được
@@ -61,7 +64,7 @@ Route::prefix($prefix)->group(function () use($prefix) {
             Route::get('/', 'index')->name($routeName . '/index');
          });
       });
-      # agents/license/login
+      # agents/nonLicense/login
       Route::controller(NonLicenseAuthenController::class)->group(function () use($prefix,$prefix_group) {
          $routeName = "{$prefix}/{$prefix_group}/auth";
          Route::get('/login', 'login')->name($routeName . '/login');
