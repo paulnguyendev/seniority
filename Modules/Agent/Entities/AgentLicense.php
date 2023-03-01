@@ -5,17 +5,17 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Kalnoy\Nestedset\NodeTrait;
 use Modules\Product\Entities\ProductModel;
 
-class AgentModel extends Model
+class AgentLicense extends Model
 {
     use NodeTrait;
     use HasFactory;
-    protected $table = 'agents';
+    protected $table = 'agents_license';
     protected $primaryKey = 'id';
     const CREATED_AT = 'created_at';
     const UPDATED_AT = 'updated_at';
     protected $fieldSearchAccepted = ['email', 'mobile', 'first_name', 'middle_name', 'last_name', 'code'];
     protected $crudNotAccepted = ['_token', 'user_id', 'sponsor_id'];
-    protected $fillable = ['code', 'first_name', 'middle_name', 'last_name', 'mobile', 'email', 'username', 'password', 'status', 'token', 'thumbnail', 'qrcode', 'parent_id', '_lft', '_rgt', 'type', 'is_suppend', 'email_verified_at', 'deleted_at', 'verify_code', 'created_at', 'updated_at', 'is_root'];
+    protected $fillable = ['code', 'first_name', 'middle_name', 'last_name', 'mobile', 'email', 'username', 'password', 'status', 'token', 'thumbnail', 'qrcode', 'parent_id', '_lft', '_rgt', 'type', 'is_suppend', 'email_verified_at', 'deleted_at', 'verify_code', 'created_at', 'updated_at', 'is_root','level_id'];
     // protected static function newFactory()
     // {
     //     return \Modules\User\Database\factories\UserModelFactory::new();
@@ -23,7 +23,7 @@ class AgentModel extends Model
     public function listItems($params = "", $options = "")
     {
         $result = null;
-        $query = $this->select('id', 'code', 'first_name', 'middle_name', 'last_name', 'mobile', 'email', 'username', 'status', 'token', 'thumbnail', 'qrcode', 'parent_id', '_lft', '_rgt', 'type', 'is_suppend', 'email_verified_at', 'deleted_at', 'created_at', 'updated_at', 'verify_code', 'is_root');
+        $query = $this->select('id', 'code', 'first_name', 'middle_name', 'last_name', 'mobile', 'email', 'username', 'status', 'token', 'thumbnail', 'qrcode', 'parent_id', '_lft', '_rgt', 'type', 'is_suppend', 'email_verified_at', 'deleted_at', 'created_at', 'updated_at', 'verify_code', 'is_root','level_id');
         if ($options['task'] == 'all') {
             if (isset($params['not_id'])) {
                 $query = $query->where('id', '!=', $params['not_id']);
@@ -81,7 +81,7 @@ class AgentModel extends Model
     }
     public function getItem($params = [], $options = [])
     {
-        $query = $this->select('id', 'code', 'first_name', 'middle_name', 'last_name', 'mobile', 'email', 'username', 'password', 'status', 'token', 'thumbnail', 'qrcode', 'parent_id', '_lft', '_rgt', 'type', 'is_suppend', 'email_verified_at', 'deleted_at', 'created_at', 'updated_at', 'verify_code', 'is_root');
+        $query = $this->select('id', 'code', 'first_name', 'middle_name', 'last_name', 'mobile', 'email', 'username', 'password', 'status', 'token', 'thumbnail', 'qrcode', 'parent_id', '_lft', '_rgt', 'type', 'is_suppend', 'email_verified_at', 'deleted_at', 'created_at', 'updated_at', 'verify_code', 'is_root','level_id');
         if ($options['task'] == 'login') {
             $result = $query->where('username', $params['username'])->where('password', md5($params['password']))->first();
         }

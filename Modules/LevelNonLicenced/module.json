@@ -1,0 +1,11 @@
+{
+    "name": "LevelNonLicenced",
+    "alias": "levelnonlicenced",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\LevelNonLicenced\\Providers\\LevelNonLicencedServiceProvider"
+    ],
+    "files": []
+}

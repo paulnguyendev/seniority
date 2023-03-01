@@ -7,5 +7,10 @@
     "MLM": true,
     "Agent": true,
     "Dashboard": true,
-    "Staff": true
+    "Staff": true,
+    "Level": true,
+    "LevelLicenced": true,
+    "LevelNonLicenced": true,
+    "Product": true,
+    "Transaction": true
 }
