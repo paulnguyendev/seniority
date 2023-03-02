@@ -11,6 +11,6 @@
 |
 */
 
-Route::prefix('staff')->group(function() {
-    Route::get('/', 'StaffController@index');
-});
+// Route::prefix('staff')->group(function() {
+//     Route::get('/', 'StaffController@index');
+// });

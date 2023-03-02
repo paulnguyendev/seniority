@@ -63,6 +63,30 @@ return [
                 'name' => 'Approved',
                 'class' => 'badge-success',
             ],
+            'open' => [
+                'name' => 'Open',
+                'class' => 'badge-soft-primary',
+            ],
+            'complete ' => [
+                'name' => 'Complete ',
+                'class' => 'badge-soft-success',
+            ],
+            'incomplete ' => [
+                'name' => 'In Complete ',
+                'class' => 'badge-soft-warning',
+            ],
+            'waiting_for_approval' => [
+                'name' => 'Waiting For Approval ',
+                'class' => 'badge-soft-primary',
+            ],
+            'deny' => [
+                'name' => 'Deny ',
+                'class' => 'badge-soft-danger',
+            ],
+            'approve' => [
+                'name' => 'Approve',
+                'class' => 'badge-soft-success',
+            ],
         ],
     ],
     'ticket' => [
@@ -94,6 +118,32 @@ return [
         'non-licensed' => [
             'name' => 'Non Licensed',
             'class' => 'badge-soft-primary',
+        ],
+    ],
+    'application' => [
+        'open' => [
+            'name' => 'Open',
+            'class' => 'badge-soft-warning',
+        ],
+        'complete' => [
+            'name' => 'Complete ',
+            'class' => 'badge-soft-success',
+        ],
+        'incomplete' => [
+            'name' => 'In Complete ',
+            'class' => 'badge-soft-warning',
+        ],
+        'waiting_for_approval' => [
+            'name' => 'Waiting For Approval ',
+            'class' => 'badge-soft-primary',
+        ],
+        'deny' => [
+            'name' => 'Deny ',
+            'class' => 'badge-soft-danger',
+        ],
+        'approve' => [
+            'name' => 'Approve',
+            'class' => 'badge-soft-success',
         ],
     ],
 ];

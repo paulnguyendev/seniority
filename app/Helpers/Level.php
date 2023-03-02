@@ -1,5 +1,7 @@
 <?php
 namespace App\Helpers;
+
+use App\Models\AgentLicenseModel;
 use Modules\Agent\Entities\AgentModel;
 use Modules\LevelLicenced\Entities\LevelLicencedModel;
 class Level
@@ -24,7 +26,7 @@ class Level
         return $items;
     }
     public static function getAgentInfo($agentId) {
-        $model = new AgentModel();
+        $model = new AgentLicenseModel();
         $agent = $model::find($agentId);
         return $agent;
     }

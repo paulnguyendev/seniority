@@ -22,15 +22,24 @@ class Agent {
                     $last_name = $agentInfo['last_name'] ?? "";
                     $result = "{$first_name} {$middle_name} {$last_name}";
                 } elseif ($key == 'thumbnail') {
-                    $thumbnail = $user['thumbnail'] ?? "";
+                    $thumbnail = $agentInfo['thumbnail'] ?? "";
                     $result = $thumbnail ? asset('uploads/images') . "/" . $thumbnail : asset('themes/dashboard_v2/assets/images/users/avatar-1.jpg');
                 } else {
-                    $result = (isset($user[$key])) ? $user[$key] : "";
+                    $result = (isset($agentInfo[$key])) ? $agentInfo[$key] : "";
                 }
             } else {
                 $result = $agentInfo->toArray();
             }
         }
+        return $result;
+    }
+    public static function showInfo($agentId) {
+        $data = self::getLicenseAgentInfo($agentId);
+        $fullname = self::getLicenseAgentInfo($agentId,'fullname');
+        $mobile = $data['mobile'] ?? "";
+        $mobile = show_phone($mobile);
+        $email = $data['email'] ?? "-";
+        $result = "{$fullname} <br> <small>Mobile: {$mobile}</small> <br> <small>Email: {$email}</small>";
         return $result;
     }
 }

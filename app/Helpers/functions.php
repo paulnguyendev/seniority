@@ -7,6 +7,24 @@ if (!function_exists('get_logo')) {
         return asset('themes/dashboard_v2/assets/obn/logo.png');
     }
 }
+if (!function_exists('get_area')) {
+    function get_area()
+    {
+        $prefix =  request()->route()->getPrefix();
+        $prefix = explode("/", $prefix);
+        $result = array_shift($prefix);
+        return $result;
+    }
+}
+if (!function_exists('get_sub_area')) {
+    function get_sub_area()
+    {
+        $prefix =  request()->route()->getPrefix();
+        $prefix = explode("/", $prefix);
+        $result = $prefix['1'] ?? "license";
+        return $result;
+    }
+}
 if (!function_exists('get_site_name')) {
     function get_site_name()
     {
@@ -118,7 +136,38 @@ if (!function_exists('show_agent_type')) {
             $current_status = isset($tpl_status[$status]) ? $tpl_status[$status] : $tpl_status['non-licensed'];
             $xhtml_status = sprintf('<span class = "badge badge-boxed  %s">%s</span>', $current_status['class'], $current_status['name']);
         }
-       
         return $xhtml_status;
+    }
+}
+if (!function_exists('get_url')) {
+    function get_url($type)
+    {
+        $area = get_area();
+        $subArea = get_sub_area();
+        $result = null;
+        $routeName = null;
+        if($area == 'staffs') {
+            $result = route('staffs/dashboard/index');
+            if($type == 'login') {
+                $result = route('staffs/auth/login');
+            }
+            elseif($type == 'logout') {
+                $result = route('staffs/auth/logout');
+            }
+        }
+        elseif($area == 'agents') {
+            if($subArea == 'license') {
+                $routeName = "agents/license";
+                $result = route("{$routeName}/dashboard/index");
+                if($type == 'login') {
+                    $result = route("{$routeName}/auth/index");
+                }
+                elseif($type == 'logout') {
+                    $result = route("{$routeName}/auth/logout");
+                }
+            }
+          
+        }
+        return $result;
     }
 }

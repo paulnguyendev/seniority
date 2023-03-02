@@ -1,15 +1,16 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace App\Http\Controllers\Staff;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\View;
 use Illuminate\Http\Request;
 
-class AuthController extends Controller
+class DashboardController extends Controller
 {
-    private $pathViewController     = "agents.pages.auth";
-    private $controllerName         = "auth";
+    private $pathViewController     = "staffs.pages.dashboard";
+    private $controllerName         = "dashboard";
+    private $routeName         = "staffs/dashboard";
     private $model;
     private $params                 = [];
     function __construct()
@@ -21,15 +22,6 @@ class AuthController extends Controller
     {
         return view(
             "{$this->pathViewController}/index",
-            [
-              
-            ]
-        );
-    }
-    public function login(Request $request)
-    {
-        return view(
-            "{$this->pathViewController}/login",
             [
               
             ]

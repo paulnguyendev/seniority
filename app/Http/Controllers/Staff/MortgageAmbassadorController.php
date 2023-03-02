@@ -1,69 +1,124 @@
 <?php
-namespace Modules\Agent\Http\Controllers;
-use App\Helpers\UserHelper;
-use Illuminate\Contracts\Support\Renderable;
-use Illuminate\Http\Request;
-use Illuminate\Routing\Controller;
+namespace App\Http\Controllers\Staff;
+use App\Helpers\Agent;
+use App\Http\Controllers\Controller;
+use App\Models\AgentLicenseModel as MainModel;
 use Illuminate\Support\Facades\View;
-use Modules\Agent\Entities\AgentModel as MainModel;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Modules\Agent\Entities\AgentLicense;
 use Modules\Authen\Emails\SendVerifyEmail;
-class AgentStaffController extends Controller
+
+class MortgageAmbassadorController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     * @return Renderable
-     */
-    private $pathViewController     = "agent::pages.staff.";
-    private $controllerName         = "agent_staff";
-    private $moduleName         = "agent";
+    private $pathViewController     = "staffs.pages.mortgage";
+    private $controllerName         = "mortgage";
+    private $routeName         = "staffs/mortgage";
     private $model;
-    
+    private $agentLicenseModel;
     private $params                 = [];
     function __construct()
     {
         $this->model = new MainModel();
         View::share('controllerName', $this->controllerName);
+        View::share('routeName', $this->routeName);
         View::share('pathViewController', $this->pathViewController);
-        View::share('moduleName', $this->moduleName);
     }
     public function index(Request $request)
     {
-        $totalAll = $this->model->where('is_root', '0')->whereNull('deleted_at')->count();
-        $totalTrash = $this->model->where('is_root', '0')->whereNotNull('deleted_at')->count();
-        $agents = $this->model->listItems([], ['task' => 'all']);
-        return view("{$this->pathViewController}index", [
+        $totalAll = $this->model->whereNull('deleted_at')->count();
+        $totalTrash = $this->model->whereNotNull('deleted_at')->count();
+        $agents = $this->model->listItems([],['task' => 'list']);
+        return view(
+            "{$this->pathViewController}/index",
+            [
+                'totalAll' => $totalAll,
+                'totalTrash' => $totalTrash,
+                'agents' => $agents,
+            ]
+        );
+    }
+    public function trashIndex(Request $request)
+    {
+        $totalAll = 0;
+        $totalTrash = 0;
+        return view("{$this->pathViewController}/trash", [
             'totalAll' => $totalAll,
             'totalTrash' => $totalTrash,
-            'agents' => $agents,
         ]);
     }
     public function form(Request $request)
     {
         $id = $request->id;
-        $title = $id ? "Edit Item" : "Add Item";
+        $module = "Application";
+        $title = "Add New {$module}";
         $item = [];
-        $item = ($id) ? $this->model::findOrFail($id) : [];
-        $agents = ($id) ? $this->model->listItems(['not_id' => $id], ['task' => 'all']) : $this->model->listItems([], ['task' => 'all']);
-        return view("{$this->pathViewController}form", [
-            'title' => $title,
-            'item' => $item,
-            'id' => $id,
-            'agents' => $agents,
-        ]);
+        $agents = $this->model->listItems([],['task' => 'list']);
+        if ($id) {
+            $item = $this->model::findOrFail($id);
+            $title = "Edit {$module}";
+            $agents = $this->model->listItems(['not_id' => $id],['task' => 'list']);
+        }
+        return view(
+            "{$this->pathViewController}/form",
+            [
+                'title' => $title,
+                'id' => $id,
+                'item' => $item,
+                'agents' => $agents,
+            ]
+        );
     }
-    public function trashIndex(Request $request)
+    public function data(Request $request)
     {
-        $slug = $request->slug;
-        $totalAll = 0;
-        $totalTrash = 0;
-        $agents = $this->model->listItems([], ['task' => 'all']);
-        return view("{$this->pathViewController}trash", [
-            'slug' => $slug,
-            'totalAll' => $totalAll,
-            'totalTrash' => $totalTrash,
-            'agents' => $agents,
-        ]);
+        $data = [];
+        $params = $request->all();
+        $draw = isset($params['draw']) ? $params['draw'] : "";
+        $start = isset($params['start']) ? $params['start'] : "";
+        $length = isset($params['length']) ? $params['length'] : "";
+        $search = isset($params['search']) ? $params['search'] : "";
+        $status = isset($params['status']) ? $params['status'] : "";
+        $parent_id = isset($params['parent_id']) ? $params['parent_id'] : "";
+        $is_trash = $request->is_trash ?? 0;
+        $searchValue = isset($search['value']) ? $search['value'] : "";
+        $paramsData['status'] = $status;
+        $paramsData['is_trash'] = $is_trash;
+        $paramsData['parent_id'] = $parent_id;
+        if (!$searchValue) {
+            $paramsData['start'] = $start;
+            $paramsData['length'] = $length;
+            $data = $this->model->listItems($paramsData, ['task' => 'list']);
+        } else {
+            $data = $this->model->listItems(['title' => $searchValue, 'is_trash' => $is_trash], ['task' => 'search']);
+        }
+        $data = $data->toArray();
+        $data = array_map(function ($item) {
+            $id = $item['id'];
+            #_Route
+            $verify_code = $item['verify_code'] ?? "";
+            $item['route_edit'] = route("{$this->routeName}/form", ['id' => $item['id']]);
+            $item['route_verify'] = route("{$this->routeName}/sendMailVerify", ['email' => $item['email'], 'token' => $item['token'], 'verify_code' => $verify_code]);
+            $item['route_suppend'] = route("{$this->routeName}/suspend", ['id' => $item['id'], 'suspend' => $item['is_suppend']]);
+            $item['route_restore'] = route("{$this->routeName}/updateField", ['id' => $item['id'], 'task' => 'restore']);
+            $item['route_quickLogin'] = route("auth_agent/quickLogin", ['token' => $item['token']]);
+            $item['route_remove'] = route("{$this->routeName}/trash", ['id' => $item['id']]);
+            $item['route_delete'] = route("{$this->routeName}/delete", ['id' => $item['id']]);
+            $parent_id = $item['parent_id'];
+            $item['user_info'] = Agent::showInfo($id);
+            $item['sponsor_info'] = $parent_id ?  Agent::showInfo($parent_id) : "";
+            $item['status'] = show_status($item['status']);
+            $thumbnail = $item['thumbnail'] ?? get_default_thumbnail_url();
+            $item['thumbnail'] = get_thumbnail_url($thumbnail);
+            $item['created_at'] = date('H:i:s d-m-Y', strtotime($item['created_at']));
+            return $item;
+        }, $data);
+        $result = [
+            "draw" => 0,
+            "recordsTotal" => $this->model->count(),
+            "recordsFiltered" => $this->model->count(),
+            "data" => $data
+        ];
+        return $result;
     }
     public function save(Request $request)
     {
@@ -86,7 +141,7 @@ class AgentStaffController extends Controller
         $password = isset($params['password']) ? $params['password'] : "";
         $code = isset($params['code']) ? $params['code'] : "";
         $status = isset($params['status']) ? $params['status'] : "";
-        $type = isset($params['type']) ? $params['type'] : "";
+       
         if (!$first_name) {
             $error['first_name'] = "Please enter first name";
         }
@@ -114,9 +169,7 @@ class AgentStaffController extends Controller
         if (!$status) {
             $error['status'] = "Please choose Status";
         }
-        if (!$type) {
-            $error['type'] = "Please enter Agent Type";
-        }
+     
         if (empty($error)) {
             $checkMail = $this->model->getItem(['email' => $email], ['task' => 'email']);
             $checkMobile = $this->model->getItem(['mobile' => $mobile], ['task' => 'mobile']);
@@ -175,7 +228,7 @@ class AgentStaffController extends Controller
                 $params['password'] = md5($password);
                 $msg = "Add Agent Success";
                 $this->model->saveItem($params, ['task' => 'add-item']);
-                $params['redirect'] = route("{$this->controllerName}/index");
+                $params['redirect'] = route("{$this->routeName}/index");
             }
         } elseif (!empty($warning) && empty($error)) {
             $status = 500;
@@ -190,57 +243,6 @@ class AgentStaffController extends Controller
         $params['warning'] = $warning;
         $params['curentPassword'] = $curentPassword;
         return $params;
-    }
-    public function data(Request $request)
-    {
-        $data = [];
-        $params = $request->all();
-        $draw = isset($params['draw']) ? $params['draw'] : "";
-        $start = isset($params['start']) ? $params['start'] : "";
-        $length = isset($params['length']) ? $params['length'] : "";
-        $search = isset($params['search']) ? $params['search'] : "";
-        $status = isset($params['status']) ? $params['status'] : "";
-        $parent_id = isset($params['parent_id']) ? $params['parent_id'] : "";
-        $is_trash = $request->is_trash ?? 0;
-        $searchValue = isset($search['value']) ? $search['value'] : "";
-        $paramsData['status'] = $status;
-        $paramsData['is_trash'] = $is_trash;
-        $paramsData['parent_id'] = $parent_id;
-        if (!$searchValue) {
-            $paramsData['start'] = $start;
-            $paramsData['length'] = $length;
-            $data = $this->model->listItems($paramsData, ['task' => 'list']);
-        } else {
-            $data = $this->model->listItems(['title' => $searchValue, 'is_trash' => $is_trash], ['task' => 'search']);
-        }
-        $data = $data->toArray();
-        $data = array_map(function ($item) {
-            $id = $item['id'];
-            #_Route
-            $verify_code = $item['verify_code'] ?? "";
-            $item['route_edit'] = route("{$this->controllerName}/form", ['id' => $item['id']]);
-            $item['route_verify'] = route("{$this->controllerName}/sendMailVerify", ['email' => $item['email'], 'token' => $item['token'], 'verify_code' => $verify_code]);
-            $item['route_suppend'] = route("{$this->controllerName}/suspend", ['id' => $item['id'], 'suspend' => $item['is_suppend']]);
-            $item['route_restore'] = route("{$this->controllerName}/updateField", ['id' => $item['id'], 'task' => 'restore']);
-            $item['route_quickLogin'] = route("auth_agent/quickLogin", ['token' => $item['token']]);
-            $item['route_remove'] = route("{$this->controllerName}/trash", ['id' => $item['id']]);
-            $item['route_delete'] = route("{$this->controllerName}/delete", ['id' => $item['id']]);
-            $parent_id = $item['parent_id'];
-            $item['user_info'] = UserHelper::showAgentInfo($id);
-            $item['sponsor_info'] = $parent_id ?  UserHelper::showAgentInfo($parent_id) : "";
-            $item['status'] = show_status($item['status']);
-            $thumbnail = $item['thumbnail'] ?? get_default_thumbnail_url();
-            $item['thumbnail'] = get_thumbnail_url($thumbnail);
-            $item['created_at'] = date('H:i:s d-m-Y', strtotime($item['created_at']));
-            return $item;
-        }, $data);
-        $result = [
-            "draw" => 0,
-            "recordsTotal" => $this->model->count(),
-            "recordsFiltered" => $this->model->count(),
-            "data" => $data
-        ];
-        return $result;
     }
     public function updateField(Request $request)
     {
@@ -295,7 +297,6 @@ class AgentStaffController extends Controller
         }
         return $ids;
     }
-    // Other
     public function suspend(Request $request)
     {
         $id = $request->id;
@@ -323,5 +324,4 @@ class AgentStaffController extends Controller
             'message' => "Send mail verify this user successfully"
         ];
     }
-    // Other
 }

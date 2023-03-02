@@ -72,6 +72,7 @@ class Kernel extends HttpKernel
         'access.userDashboard' => \Modules\Authen\Http\Middleware\AccessUserDashboard::class,
         'access.licenseAgentDashboard' => \App\Http\Middleware\AccessLicenceAgentDashboard::class,
         'access.nonLicenseAgentDashboard' => \App\Http\Middleware\AccessNonLicenceAgentDashboard::class,
-        'access.staffDashboard' => \Modules\Authen\Http\Middleware\AccessStaffDashboard::class,
+        'access.staffDashboard' => \App\Http\Middleware\AccessStaffDashboard::class,
+        // 'access.staffDashboard' => \Modules\Authen\Http\Middleware\AccessStaffDashboard::class,
     ];
 }
