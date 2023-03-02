@@ -11,7 +11,7 @@ class LevelLicencedModel extends Model
     const UPDATED_AT = 'updated_at';
     protected $fieldSearchAccepted = ['email', 'mobile', 'first_name', 'middle_name', 'last_name', 'code'];
     protected $crudNotAccepted = ['_token', 'user_id', 'sponsor_id'];
-    protected $fillable = ['name','personal_payout','team_overrides','created_at','updated_at','is_break'];
+    protected $fillable = ['name','personal_payout','team_overrides','created_at','updated_at','is_break','is_default'];
     // protected static function newFactory()
     // {
     //     return \Modules\User\Database\factories\UserModelFactory::new();
@@ -19,7 +19,7 @@ class LevelLicencedModel extends Model
     public function listItems($params = "", $options = "")
     {
         $result = null;
-        $query = $this->select('id', 'name','personal_payout','team_overrides','created_at','updated_at','is_break');
+        $query = $this->select('id', 'name','personal_payout','team_overrides','created_at','updated_at','is_break','is_default');
         if ($options['task'] == 'all') {
             if (isset($params['not_id'])) {
                 $query = $query->where('id', '!=', $params['not_id']);
@@ -37,7 +37,6 @@ class LevelLicencedModel extends Model
             } else {
                 $query = $query->whereNull('deleted_at');
             }
-            $query = $query->where('is_root', '0');
             if (isset($params['not_id'])) {
                 $query = $query->where('id', '!=', $params['not_id']);
             }
@@ -76,9 +75,12 @@ class LevelLicencedModel extends Model
     }
     public function getItem($params = [], $options = [])
     {
-        $query = $this->select('id', 'name','personal_payout','team_overrides','created_at','updated_at','is_break');
+        $query = $this->select('id', 'name','personal_payout','team_overrides','created_at','updated_at','is_break','is_default');
         if ($options['task'] == 'id') {
             $result = $query->where('id', $params['user_id'])->first();
+        }
+        if ($options['task'] == 'is_default') {
+            $result = $query->where('is_default',1)->first();
         }
         return $result;
     }

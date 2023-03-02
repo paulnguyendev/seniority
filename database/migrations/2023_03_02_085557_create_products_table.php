@@ -20,10 +20,14 @@ return new class extends Migration
             $table->string('middle_name')->nullable();
             $table->string('last_name')->nullable();
             $table->string('email')->nullable();
-            $table->string('phone')->nullable();
+            $table->string('mobile')->nullable();
             $table->unsignedBigInteger('agent_id')->nullable();
             $table->foreign('agent_id')->references('id')->on('license_agents')->onDelete('cascade');
+            $table->unsignedBigInteger('application_id')->nullable();
+            $table->foreign('application_id')->references('id')->on('applications')->onDelete('cascade');
+            $table->integer('total')->nullable();
             $table->string('status')->nullable();
+            $table->dateTime('deleted_at')->nullable();
             $table->timestamps();
         });
     }

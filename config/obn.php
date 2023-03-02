@@ -49,7 +49,7 @@ return [
             ],
             'complete' => [
                 'name' => 'Complete',
-                'class' => 'badge-soft-success',
+                'class' => 'badge-success',
             ],
             'cancel' => [
                 'name' => 'Cancel',
@@ -86,6 +86,10 @@ return [
             'approve' => [
                 'name' => 'Approve',
                 'class' => 'badge-soft-success',
+            ],
+            'closed' => [
+                'name' => 'Closed',
+                'class' => 'badge-info',
             ],
         ],
     ],
@@ -144,6 +148,10 @@ return [
         'approve' => [
             'name' => 'Approve',
             'class' => 'badge-soft-success',
+        ],
+        'closed' => [
+            'name' => 'Closed',
+            'class' => 'badge-soft-dark',
         ],
     ],
 ];

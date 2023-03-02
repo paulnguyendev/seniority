@@ -131,6 +131,7 @@ Route::prefix($prefix)->group(function () use ($prefix) {
          $routeName = "{$prefix}/product";
          Route::get('/', 'index')->name($routeName . '/index');
          Route::get('/form/{id?}', 'form')->name($routeName . '/form');
+         Route::get('/application', 'application')->name($routeName . '/application');
          Route::get('/data', 'data')->name($routeName . '/data');
          Route::post('/save/{id?}', 'save')->name($routeName . '/save');
          Route::post('/updateField/{task?}/{id?}', 'updateField')->name($routeName . '/updateField');
@@ -139,6 +140,7 @@ Route::prefix($prefix)->group(function () use ($prefix) {
          Route::delete('/destroy', 'destroy')->name($routeName . '/destroy');
          Route::delete('/trashDestroy', 'trashDestroy')->name($routeName . '/trashDestroy');
          Route::get('/list-trash', 'trashIndex')->name($routeName . '/trashIndex');
+         Route::get('/checkLevel', 'checkLevel')->name($routeName . '/checkLevel');
       });
    });
    # staffs/login

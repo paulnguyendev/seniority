@@ -1,9 +1,13 @@
 <?php
+
 namespace App\Helpers;
 
 use App\Models\AgentLicenseModel;
+use App\Models\ProductModel;
+use Modules\Agent\Entities\AgentLicense;
 use Modules\Agent\Entities\AgentModel;
 use Modules\LevelLicenced\Entities\LevelLicencedModel;
+
 class Level
 {
     public static function getLicenseLevels()
@@ -20,12 +24,13 @@ class Level
     }
     public static function getChildsOfAgent($agentId, $column = "license_level_id")
     {
-        $model = new AgentModel();
-        $items = $model::descendantsOf($agentId)->whereNotNull($column);
+        $model = new AgentLicenseModel();
+        $items = $model::descendantsOf($agentId);
         $items = $items ? $items->toArray() : [];
         return $items;
     }
-    public static function getAgentInfo($agentId) {
+    public static function getAgentInfo($agentId)
+    {
         $model = new AgentLicenseModel();
         $agent = $model::find($agentId);
         return $agent;
@@ -34,6 +39,12 @@ class Level
     {
         $agent = self::getAgentInfo($agentId);
         $result = $agent->products()->where('status', 'active')->count();
+        return $result;
+    }
+    public static function getProductsOfAgent($agentId)
+    {
+        $agent = self::getAgentInfo($agentId);
+        $result = $agent->products()->where('status', 'active')->get();
         return $result;
     }
     public static function checkLevel($agentId)
@@ -45,7 +56,7 @@ class Level
         $childsOfAgent = self::getChildsOfAgent($agentId);
         # Level ids of childs
         $levelIdsOfChilds = [];
-        $levelIdsOfChilds = array_column($childsOfAgent, 'license_level_id');
+        $levelIdsOfChilds = array_column($childsOfAgent, 'level_id');
         $levelIdsOfChilds = array_count_values($levelIdsOfChilds);
         $result = [];
         foreach ($items as $key => $item) {
@@ -83,25 +94,46 @@ class Level
         $result = end($result);
         return $result['info'] ?? [];
     }
-    public static function updateLevel($agentId) {
+    public static function getLevelInfo($levelId, $key = "")
+    {
+        $model = new LevelLicencedModel();
+        $item = $model::find($levelId);
+        $resultKey = isset($item[$key]) ? $item[$key] : "";
+        $result = $key ? $resultKey : $item;
+        return $result;
+    }
+    public static function updateLevel($agentId, $product_id = "")
+    {
         $checkLevelId = null;
         $checkLevelInfo = self::checkLevel($agentId);
         $agentInfo = self::getAgentInfo($agentId);
         $agentEmail = $agentInfo['email'] ?? "";
         $agentType = $agentInfo['type'] ?? "";
-        $licenseLevelId = $agentInfo['license_level_id'] ?? "";
-        $agentLevelId  = $agentType == 'licensed' ? $licenseLevelId : "";
-        $note = null;
-        if($checkLevelInfo) {
+        $agentLevelId = $agentInfo['level_id'] ?? "";
+        $agentModel = new AgentLicenseModel();
+        $productModel = new ProductModel();
+        $note = "No Change Level";
+        $agentLevelName = null;
+        if ($checkLevelInfo) {
             $checkLevelId = $checkLevelInfo['level_id'];
+            $agentLevelName = self::getLevelInfo($agentLevelId, 'name');
             $checkLevelName = $checkLevelInfo['level_name'];
-            if($checkLevelId != $agentLevelId) {
-                $note =  "Level of {$agentEmail} change form {$agentLevelId} to {$checkLevelId}";
+            $checkLevelIsBreak = $checkLevelInfo['is_break'] ?? 0;
+            if ($checkLevelId != $agentLevelId) {
+                $note =  "Ambassador {$agentEmail} change form {$agentLevelName} to {$checkLevelName}";
+                $agentModel->saveItem(['id' => $agentId,'level_id' => $checkLevelId],['task' => 'edit-item']);
+                if($checkLevelIsBreak == 1) {
+                    $agentModel->saveItem(['id' => $agentId,'parent_id' => NULL],['task' => 'edit-item']);
+                    $agentModel::fixTree();
+                }
+                // if($product_id) {
+                //     $productModel->saveItem(['id' => $product_id, 'status' => 'complete'],['task' => 'edit-item']);
+                // }
             }
         }
-        echo $note;
-        echo '<pre>';
-        print_r($checkLevelInfo);
-        echo '</pre>';
+        $result['note'] = $note;
+        $result['current_level'] = $agentLevelName;
+        $result['checkLevelInfo'] = $checkLevelInfo;
+        return $result;
     }
 }

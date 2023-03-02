@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Modules\Agent\Entities\AgentLicense;
 use Modules\Authen\Emails\SendVerifyEmail;
+use Modules\LevelLicenced\Entities\LevelLicencedModel;
 
 class MortgageAmbassadorController extends Controller
 {
@@ -16,10 +17,12 @@ class MortgageAmbassadorController extends Controller
     private $routeName         = "staffs/mortgage";
     private $model;
     private $agentLicenseModel;
+    private $levelLicenseModel;
     private $params                 = [];
     function __construct()
     {
         $this->model = new MainModel();
+        $this->levelLicenseModel = new LevelLicencedModel();
         View::share('controllerName', $this->controllerName);
         View::share('routeName', $this->routeName);
         View::share('pathViewController', $this->pathViewController);
@@ -54,6 +57,8 @@ class MortgageAmbassadorController extends Controller
         $title = "Add New {$module}";
         $item = [];
         $agents = $this->model->listItems([],['task' => 'list']);
+        $levels = $this->levelLicenseModel->listItems([],['task' => 'list']);
+       
         if ($id) {
             $item = $this->model::findOrFail($id);
             $title = "Edit {$module}";
@@ -66,6 +71,7 @@ class MortgageAmbassadorController extends Controller
                 'id' => $id,
                 'item' => $item,
                 'agents' => $agents,
+                'levels' => $levels,
             ]
         );
     }
@@ -132,6 +138,7 @@ class MortgageAmbassadorController extends Controller
         $curentPassword = null;
         $curentCode = null;
         $parent_id = isset($params['parent_id']) ? $params['parent_id'] : "";
+        $level_id = isset($params['level_id']) ? $params['level_id'] : "";
         $first_name = isset($params['first_name']) ? $params['first_name'] : "";
         $last_name = isset($params['last_name']) ? $params['last_name'] : "";
         $email = isset($params['email']) ? $params['email'] : "";
@@ -168,6 +175,9 @@ class MortgageAmbassadorController extends Controller
         }
         if (!$status) {
             $error['status'] = "Please choose Status";
+        }
+        if (!$level_id) {
+            $error['level_id'] = "Please choose Level";
         }
      
         if (empty($error)) {
@@ -216,6 +226,7 @@ class MortgageAmbassadorController extends Controller
             $params['mobile'] = $mobile;
             $params['parent_id'] = $parent_id;
             $params['thumbnail'] = get_default_thumbnail_url();
+            $params['verify_code'] = random_verify_code();
             $status = 200;
             if ($id) {
                 if ($curentPassword != $password) {

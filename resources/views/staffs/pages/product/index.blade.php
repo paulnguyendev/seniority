@@ -19,10 +19,9 @@
                             <tr>
                                 <th class="text-center" width="50"><input type="checkbox" bs-type="checkbox" value="all"
                                         id="inputCheckAll"></th>
-                                <th>Fullname</th>
-                                <th>Email</th>
-                                <th>Mobile</th>
+                                <th>Application Info</th>
                                 <th>Ambassador Info</th>
+                                <th>Amount</th>
                                 <th class="text-center">Status</th>
                                 <th>Timestamp</th>
                                 <th class="text-right"></th>
@@ -54,23 +53,7 @@
             {
                 data: null,
                 render: function(data) {
-                    return (data.fullname) ? data.fullname : 'empty';
-                },
-                orderable: false,
-                searchable: false
-            },
-            {
-                data: null,
-                render: function(data) {
-                    return (data.email) ? data.email : 'empty';
-                },
-                orderable: false,
-                searchable: false
-            },
-            {
-                data: null,
-                render: function(data) {
-                    return (data.mobile) ? data.mobile : '-';
+                    return (data.applicationInfo) ? data.applicationInfo : 'empty';
                 },
                 orderable: false,
                 searchable: false
@@ -83,6 +66,16 @@
                 orderable: false,
                 searchable: false
             },
+               {
+                data: null,
+                render: function(data) {
+                    return (data.total) ? data.total : '-';
+                },
+                orderable: false,
+                searchable: false
+            },
+           
+            
             {
                 data: null,
                 render: function(data) {
@@ -109,7 +102,7 @@
                     let xhtml = "";
                     xhtml += `<div class="button-items text-right">`;
                     xhtml += `  <a href="${data.route_edit}" class="btn btn-info waves-effect waves-light btn-sm">
-                            <i class="fas fa-pencil-alt mr-2"></i> Edit
+                            <i class="fas fa-eye mr-2"></i> View
                         </a>`;
                     xhtml += `</div>`;
                     return xhtml;

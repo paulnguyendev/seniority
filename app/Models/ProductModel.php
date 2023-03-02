@@ -11,7 +11,7 @@ class ProductModel extends Model
     const UPDATED_AT = 'updated_at';
     protected $fieldSearchAccepted = ['email', 'mobile', 'first_name', 'middle_name', 'last_name'];
     protected $crudNotAccepted = ['_token', 'user_id', 'sponsor_id'];
-    protected $fillable = ['code','first_name','middle_name','last_name','email','phone','agent_id','status','created_at','updated_at'];
+    protected $fillable = ['code','first_name','middle_name','last_name','email','mobile','agent_id','total','status','created_at','updated_at','agent_id','application_id'];
     // protected static function newFactory()
     // {
     //     return \Modules\User\Database\factories\UserModelFactory::new();
@@ -19,12 +19,11 @@ class ProductModel extends Model
     public function listItems($params = "", $options = "")
     {
         $result = null;
-        $query = $this->select('id','code','first_name','middle_name','last_name','email','phone','agent_id','status','created_at','updated_at');
+        $query = $this->select('id','code','first_name','middle_name','last_name','email','mobile','agent_id','total','status','created_at','updated_at');
         if ($options['task'] == 'all') {
             if (isset($params['not_id'])) {
                 $query = $query->where('id', '!=', $params['not_id']);
             }
-            
             $result = $query->orderBy('id', 'desc')->get();
         }
         if ($options['task'] == 'list') {
@@ -33,7 +32,6 @@ class ProductModel extends Model
             } else {
                 $query = $query->whereNull('deleted_at');
             }
-            $query = $query->where('is_root', '0');
             if (isset($params['not_id'])) {
                 $query = $query->where('id', '!=', $params['not_id']);
             }
@@ -72,9 +70,12 @@ class ProductModel extends Model
     }
     public function getItem($params = [], $options = [])
     {
-        $query = $this->select('id', 'code','first_name','middle_name','last_name','email','phone','agent_id','status','created_at','updated_at');
+        $query = $this->select('id', 'code','first_name','middle_name','last_name','email','mobile','agent_id','total','status','created_at','updated_at');
         if ($options['task'] == 'id') {
             $result = $query->where('id', $params['user_id'])->first();
+        }
+        if ($options['task'] == 'code') {
+            $result = $query->where('code', $params['code'])->first();
         }
         return $result;
     }
@@ -82,14 +83,13 @@ class ProductModel extends Model
     {
         if ($option['task'] == 'add-item') {
             $paramsInsert = array_diff_key($params, array_flip($this->crudNotAccepted));
-            $parent = self::find($params['parent_id']);
-            $result =    self::create($paramsInsert, $parent);
-            return $result;
+            $result =    self::create($paramsInsert);
+            $idInsert =  $result->id;
+            return $idInsert;
         }
         if ($option['task'] == 'edit-item') {
-            $node = self::find($params['id']);
             $paramsUpdate = array_diff_key($params, array_flip($this->crudNotAccepted));
-            $node->update($paramsUpdate);
+            self::where('id', $params['id'])->update($paramsUpdate);
         }
     }
     public function deleteItem($params = "", $option = "")

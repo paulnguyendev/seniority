@@ -1,15 +1,14 @@
 <?php
-
 namespace App\Http\Controllers\Staff;
-
 use App\Helpers\Agent;
+use App\Helpers\Level;
 use App\Http\Controllers\Controller;
 use App\Models\AgentLicenseModel;
-use App\Models\ApplicationModel as MainModel;
+use App\Models\ApplicationModel;
+use App\Models\ProductModel as MainModel;
 use Illuminate\Support\Facades\View;
 use Illuminate\Http\Request;
 use Modules\Agent\Entities\AgentLicense;
-
 class ProductController extends Controller
 {
     private $pathViewController     = "staffs.pages.product";
@@ -17,11 +16,13 @@ class ProductController extends Controller
     private $routeName         = "staffs/product";
     private $model;
     private $agentLicenseModel;
+    private $applicationModel;
     private $params                 = [];
     function __construct()
     {
         $this->model = new MainModel();
         $this->agentLicenseModel = new AgentLicenseModel();
+        $this->applicationModel = new ApplicationModel();
         View::share('controllerName', $this->controllerName);
         View::share('routeName', $this->routeName);
         View::share('pathViewController', $this->pathViewController);
@@ -30,7 +31,6 @@ class ProductController extends Controller
     {
         $totalAll = $this->model->whereNull('deleted_at')->count();
         $totalTrash = $this->model->whereNotNull('deleted_at')->count();
-       
         return view(
             "{$this->pathViewController}/index",
             [
@@ -51,11 +51,11 @@ class ProductController extends Controller
     public function form(Request $request)
     {
         $id = $request->id;
-        $module = "Application";
+        $module = "Loans";
         $title = "Add New {$module}";
         $item = [];
-        $agents = $this->agentLicenseModel->listItems([],['task' => 'list']);
-       
+        $agents = $this->agentLicenseModel->listItems([], ['task' => 'list']);
+        $applications = $this->applicationModel->listItems(['status' => 'approve'], ['task' => 'list']);
         if ($id) {
             $item = $this->model::findOrFail($id);
             $title = "Eidt New {$module}";
@@ -67,6 +67,7 @@ class ProductController extends Controller
                 'id' => $id,
                 'item' => $item,
                 'agents' => $agents,
+                'applications' => $applications,
             ]
         );
     }
@@ -99,12 +100,12 @@ class ProductController extends Controller
             $item['route_remove'] = route("{$this->routeName}/trash", ['id' => $item['id']]);
             $item['route_delete'] = route("{$this->routeName}/delete", ['id' => $item['id']]);
             $item['route_restore'] = route("{$this->routeName}/updateField", ['id' => $item['id'], 'task' => 'restore']);
-
             #_data
             $item['fullname'] = "{$item['first_name']} {$item['middle_name']} {$item['last_name']}";
             $item['mobile'] = show_phone($item['mobile']);
             $item['status'] = show_status($item['status']);
             $agentId = $item['agent_id'] ?? "";
+            $item['total'] = number_format($item['total']) . " $" ?? 0;
             $item['agentInfo'] = Agent::showInfo($agentId);
             $item['created_at'] = date('H:i:s d-m-Y', strtotime($item['created_at']));
             return $item;
@@ -123,44 +124,60 @@ class ProductController extends Controller
         $id = $request->id;
         $error = [];
         $warning = [];
+        $product_id = null;
+        $checkCode = null;
+        $application_id = isset($params['application_id']) ? $params['application_id'] : "";
+        $agent_id = isset($params['agent_id']) ? $params['agent_id'] : "";
+        $total = isset($params['total']) ? $params['total'] : "";
         $first_name = isset($params['first_name']) ? $params['first_name'] : "";
         $last_name = isset($params['last_name']) ? $params['last_name'] : "";
         $email = isset($params['email']) ? $params['email'] : "";
-        $agent_id = isset($params['agent_id']) ? $params['agent_id'] : "";
         $mobile = isset($params['mobile']) ? $params['mobile'] : "";
+        $code = isset($params['code']) ? $params['code'] : "";
         $mobile = $mobile ? clean($mobile) : "";
-        
-        if (!$first_name) {
-            $error['first_name'] = "Please enter first name";
-        }
-        if (!$last_name) {
-            $error['last_name'] = "Please enter last name";
-        }
-        if (!$email) {
-            $error['email'] = "Please enter email";
-        } 
-      
-        if (!$mobile) {
-            $error['mobile'] = "Please enter mobile";
+        if (!$code) {
+            $error['code'] = "Please enter Loans ID";
         } else {
-            $params['mobile'] = clean($params['mobile']);
+            $checkCode = $this->model->getItem(['code' => $code], ['task' => 'code']);
+            if ($checkCode) {
+                $error['code'] = "Loans ID already exists";
+            }
         }
-        if (!$agent_id) {
-            $warning['agent_id'] = "Please choose Ambassador";
-        } 
+        if (!$total) {
+            $error['total'] = "Please enter Amount";
+        }
+        if (!$application_id) {
+            $warning['application_id'] = "Please choose Application Info";
+        }
         if (empty($error) && empty($warning)) {
-            $params['mobile'] = $mobile;
-            $params['code'] = random_code();
-            $params['status'] = $params['status'] ? $params['status'] : "open";
+            if ($mobile) {
+                $params['mobile'] = $mobile;
+            }
+            $params['status'] = "active";
             $status = 200;
+            #_Update Level
+            if ($agent_id) {
+                Level::updateLevel($agent_id);
+            }
             if ($id) {
                 $this->model->saveItem($params, ['task' => 'edit-item']);
-                $msg = "Update Application Success";
+                $msg = "Update Loans Success";
             } else {
-                $params['token'] = md5($params['email'] . time());
-                $msg = "Add Application Success";
-                $this->model->saveItem($params, ['task' => 'add-item']);
+                $msg = "Add Loans Success";
+                $product_id = $this->model->saveItem($params, ['task' => 'add-item']);
                 $params['redirect'] = route("{$this->routeName}/index");
+            }
+            $this->applicationModel->saveItem(['id' => $application_id, 'status' => 'closed'], ['task' => 'edit-item']);
+            if ($agent_id) {
+                if (Level::checkLevel($agent_id)) {
+                    $productsOfAgent = Level::getProductsOfAgent($agent_id);
+                    if(count($productsOfAgent) > 0) {
+                        foreach ($productsOfAgent as $product) {
+                            $this->model->saveItem(['id' => $product['id'], 'status' => 'complete'], ['task' => 'edit-item']);
+                        }
+                    }
+                   
+                }
             }
         } elseif (!empty($warning) && empty($error)) {
             $status = 500;
@@ -202,7 +219,6 @@ class ProductController extends Controller
     {
         $id = $request->id;
         $this->model->deleteItem(['id' => $id], ['task' => 'delete']);
-        $this->model::fixTree();
         return [
             'success' => true,
             'message' => 'Đã chuyển nội dung vào thùng rác'
@@ -227,5 +243,20 @@ class ProductController extends Controller
             }
         }
         return $ids;
+    }
+    public function application(Request $request)
+    {
+        $params = $request->all();
+        $applicationId = $params['applicationId'] ?? "";
+        $application = $this->applicationModel::find($applicationId);
+        $application = $application ? $application->toArray() : [];
+        $application['mobile'] = isset($application['mobile']) ? show_phone($application['mobile']) : "";
+        return $application;
+    }
+    public function checkLevel(Request $request)
+    {
+        $agentId = 4;
+        $result = Level::checkLevel($agentId);
+        return $result;
     }
 }

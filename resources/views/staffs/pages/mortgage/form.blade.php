@@ -17,8 +17,7 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-body">
-                    <form
-                        action="{{ !$id ? route("{$routeName}/save") : route("{$routeName}/save", ['id' => $id]) }}"
+                    <form action="{{ !$id ? route("{$routeName}/save") : route("{$routeName}/save", ['id' => $id]) }}"
                         method="post" id="form-save" enctype="multipart/form-data">
                         <div class="row">
                             <div class="col-md-4">
@@ -82,11 +81,27 @@
                                 <div class="form-group">
                                     <label for="text">Agent ID (*)</label>
                                     <input type="text" class="form-control" name="code" id="code"
-                                        value="{{ $item['code'] ?? random_code() }}">
+                                        value="{{ $item['code'] ?? random_code() }}" {{!$id ? "readonly" : ""}}>
                                     <span class="help-block"></span>
                                 </div>
                             </div>
-                           
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    @php
+                                        $level_id = $item['level_id'] ?? '';
+                                    @endphp
+                                    <label for="text">Level (*)</label>
+                                    <select name="level_id" id="" class="form-control">
+                                        <option value="">Choose Level</option>
+                                        @foreach ($levels as $level)
+                                          
+                                            <option value="{{$level['id']}}" {{ $level['id'] == $level_id ? 'selected' : '' }}>{{$level['name'] ?? ""}}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <span class="help-block"></span>
+                                </div>
+                            </div>
                             <div class="col-md-12">
                                 <div class="form-group">
                                     @php
@@ -105,28 +120,23 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     @php
-                                        $parent_id = $item['parent_id'] ?? "";
+                                        $parent_id = $item['parent_id'] ?? '';
                                     @endphp
                                     <label for="text">Sponsor</label>
                                     <select name="parent_id" id="" class="form-control select2">
                                         <option value="">Choose Sponsor</option>
                                         @foreach ($agents as $agent)
-                                            <option value="{{ $agent['id'] }}" {{$parent_id == $agent['id'] ? "selected" : ""}}>
+                                            <option value="{{ $agent['id'] }}"
+                                                {{ $parent_id == $agent['id'] ? 'selected' : '' }}>
                                                 {{ Agent::getLicenseAgentInfo($agent['id'], 'fullname') }}</option>
                                         @endforeach
                                     </select>
                                     <span class="help-block"></span>
                                 </div>
                             </div>
-
-                          
-                          
-
-
                         </div>
                         <div class="buttons">
                             <input type="hidden" name="id" value="{{ $item['id'] ?? '' }}">
-                          
                             <button class="btn btn-primary">Save</button>
                         </div>
                     </form>
@@ -156,8 +166,6 @@
                     let xhtml = '';
                     data.forEach((item, key) => {
                         xhtml += `<option value = '${item.id}'>${item.name}</option>`;
-
-
                     });
                     mlmLevel.html(xhtml);
                     console.log(data);
@@ -191,16 +199,13 @@
                                 location.reload();
                             }
                         })
-                    } 
-                    else if(status == 500) {
+                    } else if (status == 500) {
                         deleteError();
-                        swal("Warning",msg,"warning");
-                    }
-                    else {
-                        swal("Oops","Please check the information again","error").then(() => {
+                        swal("Warning", msg, "warning");
+                    } else {
+                        swal("Oops", "Please check the information again", "error").then(() => {
                             showError(msg);
                         })
-                        
                     }
                 },
                 error: function(error) {
