@@ -13,12 +13,17 @@ class AuthenController extends Controller
 {
     private $pathViewController     = "agents.pages.auth.non_license";
     private $controllerName         = "auth";
-    private $routeName         = "agents/nonLicense/auth";
+    private $routeName;
+    private $prefix;
+    private $prefix_group;
     private $model;
     private $params                 = [];
     function __construct()
     {
         $this->model = new MainModel();
+        $this->prefix = config('obn.license.prefix');
+        $this->prefix_group = config('obn.license.prefix_group');
+        $this->routeName = "{$this->prefix}/{$this->prefix_group}/{$this->controllerName}";
         View::share('controllerName', $this->controllerName);
         View::share('routeName', $this->routeName);
     }
@@ -78,7 +83,7 @@ class AuthenController extends Controller
             $status = 400;
             $msg = $error;
         }
-        $params['redirect'] = route("agents/license/dashboard/index");
+        $params['redirect'] = get_url('dashboard');
         $params['status'] = $status;
         $params['msg'] = $msg;
         return $params;

@@ -10,7 +10,7 @@
     @endphp
     @if ($area == 'staffs')
         @include('share.navigation_staff')
-    @elseif($area == 'agents')
+    @elseif($area == 'ambassador')
         @include('share.navigation_agent')
     @endif
     <!-- End Navigation Bar-->

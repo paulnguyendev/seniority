@@ -1,5 +1,8 @@
 @extends('agents.master.auth')
-@section('title','Agent Login')
+@php
+    $title = config('obn.license.title');
+@endphp
+@section('title',"{$title} Login")
 @section('content')
 <div class="card">
     <div class="card-body">
@@ -7,7 +10,7 @@
             <a href="#" class="logo logo-admin"><img src="{{ asset('themes/dashboard_v2') }}/assets/obn/logo.png"
                     height="100" alt="logo"></a>
         </div>
-        <h1 class="text-center title-auth">Agent License  Login</h1>
+        <h1 class="text-center title-auth">{{$title}} Login</h1>
         <div class="p-3">
             <form class="form-horizontal m-t-20" id="form-login" action="{{ route("{$routeName}/postLogin") }}"
                 method="post">

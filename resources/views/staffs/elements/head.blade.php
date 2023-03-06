@@ -13,6 +13,7 @@
 <link href="{{asset('themes/dashboard_v2')}}/assets/css/icons.css" rel="stylesheet" type="text/css">
 <link href="{{asset('themes/dashboard_v2')}}/assets/css/style.css" rel="stylesheet" type="text/css">
 <link href="{{asset('themes/dashboard_v2')}}/assets/plugins/select2/select2.min.css" rel="stylesheet" type="text/css" />
+@stack('css')
 @yield('custom_style')
  <!-- Sweet Alert -->
  <link href="{{ asset('themes/dashboard_v2') }}/assets/plugins/sweet-alert2/sweetalert2.min.css" rel="stylesheet"

@@ -5,7 +5,7 @@
                 <h4 class="page-title">@yield('page_title', 'Dashboard')</h4>
                 <div class="btn-group mt-2">
                     <ol class="breadcrumb hide-phone p-0 m-0">
-                        <li class="breadcrumb-item"><a href="{{  get_url('dashboard') }}">{{ get_site_name() }}</a>
+                        <li class="breadcrumb-item"><a href="{{ get_url('dashboard') }}">{{ get_site_name() }}</a>
                         </li>
                         @if (isset($parent))
                             @php
@@ -27,6 +27,20 @@
                     @if (isset($btnUrl))
                         <a href="{{ $btnUrl ?? '#' }}" class="btn btn-primary">Add new</a>
                     @endif
+                </div>
+            @endif
+            @if (isset($showSelect))
+                @php
+                    $showAmbassadorType = isset($showAmbassadorType) ? $showAmbassadorType : "";
+                @endphp
+                <div class="buttons">
+                    <div class="form-group">
+                        <select name="showAmbassadorType" id="" class="form-control">
+                            <option value="">Choose Ambassador</option>
+                            <option value="mortgage" {{$showAmbassadorType == 'mortgage' ? "selected" : ""}}>Mortgage Ambassador</option>
+                            <option value="community" {{$showAmbassadorType == 'community' ? "selected" : ""}}>Community Ambassador</option>
+                        </select>
+                    </div>
                 </div>
             @endif
         </div>

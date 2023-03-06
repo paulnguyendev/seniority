@@ -1,23 +1,17 @@
 <?php
 namespace App\Models;
-
-use App\Models\ProductModel as ModelsProductModel;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Kalnoy\Nestedset\NodeTrait;
-use Modules\Product\Entities\ProductModel;
-
-class AgentLicenseModel extends Model
+class LevelNonLicencedModel extends Model
 {
-    use NodeTrait;
     use HasFactory;
-    protected $table = 'license_agents';
+    protected $table = 'non_license_levels';
     protected $primaryKey = 'id';
     const CREATED_AT = 'created_at';
     const UPDATED_AT = 'updated_at';
     protected $fieldSearchAccepted = ['email', 'mobile', 'first_name', 'middle_name', 'last_name', 'code'];
     protected $crudNotAccepted = ['_token', 'user_id', 'sponsor_id'];
-    protected $fillable = ['code', 'first_name', 'middle_name', 'last_name', 'mobile', 'email', 'username', 'password', 'status', 'token', 'thumbnail', 'qrcode', 'parent_id', '_lft', '_rgt', 'is_suppend', 'email_verified_at', 'deleted_at', 'verify_code', 'created_at', 'updated_at', 'is_root','level_id'];
+    protected $fillable = ['name','personal_payout','team_overrides','created_at','updated_at','is_break','is_default'];
     // protected static function newFactory()
     // {
     //     return \Modules\User\Database\factories\UserModelFactory::new();
@@ -25,7 +19,7 @@ class AgentLicenseModel extends Model
     public function listItems($params = "", $options = "")
     {
         $result = null;
-        $query = $this->select('id', 'code', 'first_name', 'middle_name', 'last_name', 'mobile', 'email', 'username', 'status', 'token', 'thumbnail', 'qrcode', 'parent_id', '_lft', '_rgt', 'is_suppend', 'email_verified_at', 'deleted_at', 'created_at', 'updated_at', 'verify_code', 'is_root','level_id');
+        $query = $this->select('id', 'name','personal_payout','team_overrides','created_at','updated_at','is_break','is_default');
         if ($options['task'] == 'all') {
             if (isset($params['not_id'])) {
                 $query = $query->where('id', '!=', $params['not_id']);
@@ -43,9 +37,6 @@ class AgentLicenseModel extends Model
             } else {
                 $query = $query->whereNull('deleted_at');
             }
-            if(!isset($params['has_root'])) {
-                $query = $query->where('is_root', '0');
-            }
             if (isset($params['not_id'])) {
                 $query = $query->where('id', '!=', $params['not_id']);
             }
@@ -58,7 +49,6 @@ class AgentLicenseModel extends Model
                 if($params['parent_id']) {
                     $query = $query->where('parent_id', $params['parent_id']);
                 }
-                
             }
             if (isset($params['start']) && isset($params['length'])) {
                 if ($params['start'] == 0) {
@@ -85,30 +75,12 @@ class AgentLicenseModel extends Model
     }
     public function getItem($params = [], $options = [])
     {
-        $query = $this->select('id', 'code', 'first_name', 'middle_name', 'last_name', 'mobile', 'email', 'username', 'password', 'status', 'token', 'thumbnail', 'qrcode', 'parent_id', '_lft', '_rgt', 'is_suppend', 'email_verified_at', 'deleted_at', 'created_at', 'updated_at', 'verify_code', 'is_root','level_id');
-        if ($options['task'] == 'login') {
-            $result = $query->where('username', $params['username'])->where('password', md5($params['password']))->first();
-        }
+        $query = $this->select('id', 'name','personal_payout','team_overrides','created_at','updated_at','is_break','is_default');
         if ($options['task'] == 'id') {
             $result = $query->where('id', $params['user_id'])->first();
         }
-        if ($options['task'] == 'code') {
-            $result = $query->where('code', $params['code'])->where('status', 'active')->first();
-        }
-        if ($options['task'] == 'email') {
-            $result = $query->where('email', $params['email'])->first();
-        }
-        if ($options['task'] == 'mobile') {
-            $result = $query->where('mobile', $params['mobile'])->first();
-        }
-        if ($options['task'] == 'username') {
-            $result = $query->where('username', $params['username'])->first();
-        }
-        if ($options['task'] == 'token') {
-            $result = $query->where('token', $params['token'])->first();
-        }
-        if ($options['task'] == 'verify_code') {
-            $result = $query->where('verify_code', $params['verify_code'])->first();
+        if ($options['task'] == 'is_default') {
+            $result = $query->where('is_default',1)->first();
         }
         return $result;
     }
@@ -132,8 +104,8 @@ class AgentLicenseModel extends Model
             $this->where('id', $params['id'])->delete();
         }
     }
-    public function products()
+    public function conditionLevel()
     {
-        return $this->hasMany(ModelsProductModel::class, 'agent_id', 'id');
+        return $this->hasMany(ConditionLicenseLevelModel::class, 'level_id', 'id');
     }
 }

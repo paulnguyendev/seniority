@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Agent\IndexController as AgentIndexController;
 use App\Http\Controllers\Agent\License\AuthenController as LicenseAuthenController;
 use App\Http\Controllers\Agent\NonLicense\AuthenController as NonLicenseAuthenController;
 use App\Http\Controllers\Staff\AuthenController as StaffAuthenController;
@@ -10,6 +11,7 @@ use App\Http\Controllers\Staff\DashboardController as StaffDashboardController;
 use App\Http\Controllers\Staff\ApplicationController as StaffApplicationController;
 use App\Http\Controllers\Staff\ProductController as StaffProductController;
 use App\Http\Controllers\Staff\MortgageAmbassadorController as StaffMortgageAmbassadorController;
+use App\Http\Controllers\Staff\CommunityAmbassadorController as StaffCommunityAmbassadorController;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,12 +34,11 @@ Route::get('/', function () {
 //       Route::get('/', 'index')->name($routeName . '/index');
 //    });
 // });
-$prefix = "agents";
-Route::prefix($prefix)->group(function () use ($prefix) {
-   Route::get('/', function () {
-      return "Agents Area";
-   });
-   $prefix_group = "license";
+$prefix = "ambassador";
+Route::prefix($prefix)->controller(AgentIndexController::class)->group(function () use ($prefix) {
+   $routeName = $prefix;
+   Route::get('/', 'index')->name($routeName . '/index');
+   $prefix_group = "mortgage";
    Route::prefix($prefix_group)->group(function () use ($prefix, $prefix_group) {
       // Fai login mới vào được
       Route::middleware('access.licenseAgentDashboard')->group(function () use ($prefix, $prefix_group) {
@@ -98,6 +99,7 @@ Route::prefix($prefix)->group(function () use ($prefix) {
       Route::prefix('')->controller(StaffDashboardController::class)->group(function () use ($prefix) {
          $routeName = "{$prefix}/dashboard";
          Route::get('/', 'index')->name($routeName . '/index');
+         Route::post('/updateSetting', 'updateSetting')->name($routeName . '/updateSetting');
       });
       Route::prefix('application')->controller(StaffApplicationController::class)->group(function () use ($prefix) {
          $routeName = "{$prefix}/application";
@@ -114,6 +116,21 @@ Route::prefix($prefix)->group(function () use ($prefix) {
       });
       Route::prefix('mortgage-ambassador')->controller(StaffMortgageAmbassadorController::class)->group(function () use ($prefix) {
          $routeName = "{$prefix}/mortgage";
+         Route::get('/', 'index')->name($routeName . '/index');
+         Route::get('/form/{id?}', 'form')->name($routeName . '/form');
+         Route::get('/data', 'data')->name($routeName . '/data');
+         Route::post('/save/{id?}', 'save')->name($routeName . '/save');
+         Route::post('/updateField/{task?}/{id?}', 'updateField')->name($routeName . '/updateField');
+         Route::delete('/trash/{id}', 'trash')->name($routeName . '/trash');
+         Route::delete('/delete/{id}', 'delete')->name($routeName . '/delete');
+         Route::delete('/destroy', 'destroy')->name($routeName . '/destroy');
+         Route::delete('/trashDestroy', 'trashDestroy')->name($routeName . '/trashDestroy');
+         Route::get('/list-trash', 'trashIndex')->name($routeName . '/trashIndex');
+         Route::post('/suspend/{id?}/{suspend?}', 'suspend')->name($routeName . '/suspend');
+         Route::post('/sendMailVerify/{email?}/{token?}/{verify_code?}', 'sendMailVerify')->name($routeName . '/sendMailVerify');
+      });
+      Route::prefix('community-ambassador')->controller(StaffCommunityAmbassadorController::class)->group(function () use ($prefix) {
+         $routeName = "{$prefix}/community";
          Route::get('/', 'index')->name($routeName . '/index');
          Route::get('/form/{id?}', 'form')->name($routeName . '/form');
          Route::get('/data', 'data')->name($routeName . '/data');

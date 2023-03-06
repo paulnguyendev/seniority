@@ -2,36 +2,38 @@
 namespace App\Http\Controllers\Staff;
 use App\Helpers\Agent;
 use App\Http\Controllers\Controller;
-use App\Models\AgentLicenseModel as MainModel;
+use App\Models\AgentNonLicenseModel as MainModel;
+use App\Models\LevelNonLicencedModel;
 use Illuminate\Support\Facades\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Modules\Agent\Entities\AgentLicense;
 use Modules\Authen\Emails\SendVerifyEmail;
 use Modules\LevelLicenced\Entities\LevelLicencedModel;
-
-class MortgageAmbassadorController extends Controller
+class CommunityAmbassadorController extends Controller
 {
-    private $pathViewController     = "staffs.pages.mortgage";
-    private $controllerName         = "mortgage";
-    private $routeName         = "staffs/mortgage";
+    private $pathViewController     = "staffs.pages.community";
+    private $controllerName         = "community";
+    private $routeName         = "staffs/community";
     private $model;
     private $agentLicenseModel;
     private $levelLicenseModel;
+    private $levelNonLicenseModel;
     private $params                 = [];
     function __construct()
     {
         $this->model = new MainModel();
         $this->levelLicenseModel = new LevelLicencedModel();
+        $this->levelNonLicenseModel = new LevelNonLicencedModel();
         View::share('controllerName', $this->controllerName);
         View::share('routeName', $this->routeName);
         View::share('pathViewController', $this->pathViewController);
     }
     public function index(Request $request)
     {
-        $totalAll = $this->model->whereNull('deleted_at')->count();
-        $totalTrash = $this->model->whereNotNull('deleted_at')->count();
-        $agents = $this->model->listItems(['has_root' => '1'],['task' => 'list']);
+        $totalAll = $this->model->where('is_root','0')->whereNull('deleted_at')->count();
+        $totalTrash = $this->model->where('is_root','0')->whereNotNull('deleted_at')->count();
+        $agents = $this->model->listItems([],['task' => 'list']);
         return view(
             "{$this->pathViewController}/index",
             [
@@ -52,13 +54,14 @@ class MortgageAmbassadorController extends Controller
     }
     public function form(Request $request)
     {
+        
         $id = $request->id;
-        $module = "Mortgage Ambassador";
+        $module = "Community Ambassador";
         $title = "Add New {$module}";
         $item = [];
         $agents = $this->model->listItems(['has_root' => '1'],['task' => 'list']);
-        $levels = $this->levelLicenseModel->listItems([],['task' => 'list']);
-       
+      
+        $levels = $this->levelNonLicenseModel->listItems([],['task' => 'list']);
         if ($id) {
             $item = $this->model::findOrFail($id);
             $title = "Edit {$module}";
@@ -110,8 +113,8 @@ class MortgageAmbassadorController extends Controller
             $item['route_remove'] = route("{$this->routeName}/trash", ['id' => $item['id']]);
             $item['route_delete'] = route("{$this->routeName}/delete", ['id' => $item['id']]);
             $parent_id = $item['parent_id'];
-            $item['user_info'] = Agent::showInfo($id);
-            $item['sponsor_info'] = $parent_id ?  Agent::showInfo($parent_id) : "";
+            $item['user_info'] = Agent::showInfo($id,'non_license');
+            $item['sponsor_info'] = $parent_id ?  Agent::showInfo($parent_id,'non_license') : "";
             $item['status'] = show_status($item['status']);
             $thumbnail = $item['thumbnail'] ?? get_default_thumbnail_url();
             $item['thumbnail'] = get_thumbnail_url($thumbnail);
@@ -148,7 +151,6 @@ class MortgageAmbassadorController extends Controller
         $password = isset($params['password']) ? $params['password'] : "";
         $code = isset($params['code']) ? $params['code'] : "";
         $status = isset($params['status']) ? $params['status'] : "";
-       
         if (!$first_name) {
             $error['first_name'] = "Please enter first name";
         }
@@ -179,7 +181,6 @@ class MortgageAmbassadorController extends Controller
         if (!$level_id) {
             $error['level_id'] = "Please choose Level";
         }
-     
         if (empty($error)) {
             $checkMail = $this->model->getItem(['email' => $email], ['task' => 'email']);
             $checkMobile = $this->model->getItem(['mobile' => $mobile], ['task' => 'mobile']);
@@ -237,7 +238,7 @@ class MortgageAmbassadorController extends Controller
             } else {
                 $params['token'] = md5($params['email'] . time());
                 $params['password'] = md5($password);
-                $msg = "Add Agent Success";
+                $msg = "Add Community Ambassador Success";
                 $this->model->saveItem($params, ['task' => 'add-item']);
                 $params['redirect'] = route("{$this->routeName}/index");
             }

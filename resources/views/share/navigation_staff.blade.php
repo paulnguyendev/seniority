@@ -17,8 +17,7 @@
                     <li class="dropdown notification-list">
                         <a class="nav-link dropdown-toggle arrow-none waves-effect nav-user" data-toggle="dropdown"
                             href="#" role="button" aria-haspopup="false" aria-expanded="false">
-                            <img src="{{Staff::getStaffInfo('','thumbnail')}}"
-                                alt="user" class="rounded-circle">
+                            <img src="{{ Staff::getStaffInfo('', 'thumbnail') }}" alt="user" class="rounded-circle">
                             <span class="nav-user-title">{{ Staff::getStaffInfo('', 'fullname') }} </span>
                         </a>
                         <div class="dropdown-menu dropdown-menu-right profile-dropdown  border-0">
@@ -54,23 +53,21 @@
             <div id="navigation">
                 <!-- Navigation Menu-->
                 <ul class="navigation-menu">
-                    <li class="has-submenu">
-                        <a href="{{ get_url('dashboard') }}"><i class="dripicons-device-desktop"></i>Dashboard</a>
+                    <li class="has-submenu"><a href="{{ get_url('dashboard') }}"><i
+                                class="dripicons-device-desktop"></i>Dashboard</a>
+                    </li>
+                    <li class="has-submenu"><a href="#"><i class="fas fa-user"></i>Manage Ambassadors</a>
+                        <ul class="submenu">
+                            <li><a href="{{route('staffs/mortgage/index')}}">Mortgage Ambassador</a></li>
+                            <li><a href="{{route('staffs/community/index')}}">Community Ambassador</a></li>
+                        </ul>
                     </li>
                     <li>
-                        <a href="{{route('staffs/mortgage/index')}}"><i class="dripicons-blog"></i>Mortgage Ambassador</a>
-                    </li>
-                    {{-- <li>
-                        <a href="#"><i class="dripicons-blog"></i>Community  Ambassador</a>
-                    </li> --}}
-                    
-                  
-                    
-                    <li>
-                        <a href="{{route('staffs/application/index')}}"><i class="dripicons-blog"></i>Manage Applications</a>
+                        <a href="{{ route('staffs/application/index') }}"><i class="fab fa-wpforms"></i>Manage
+                            Applications</a>
                     </li>
                     <li>
-                        <a href="{{route('staffs/product/index')}}"><i class="dripicons-blog"></i>Manage Loans</a>
+                        <a href="{{ route('staffs/product/index') }}"><i class="far fa-folder"></i>Manage Loans</a>
                     </li>
                 </ul>
                 <!-- End navigation menu -->

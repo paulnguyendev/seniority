@@ -3,6 +3,7 @@
 namespace App\Helpers;
 
 use App\Models\AgentLicenseModel;
+use App\Models\LevelNonLicencedModel;
 use App\Models\ProductModel;
 use Modules\Agent\Entities\AgentLicense;
 use Modules\Agent\Entities\AgentModel;
@@ -94,9 +95,9 @@ class Level
         $result = end($result);
         return $result['info'] ?? [];
     }
-    public static function getLevelInfo($levelId, $key = "")
+    public static function getLevelInfo($levelId, $key = "", $type = "license")
     {
-        $model = new LevelLicencedModel();
+        $model = $type == 'license' ? new LevelLicencedModel() : new LevelNonLicencedModel();
         $item = $model::find($levelId);
         $resultKey = isset($item[$key]) ? $item[$key] : "";
         $result = $key ? $resultKey : $item;

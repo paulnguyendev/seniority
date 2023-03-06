@@ -15,6 +15,7 @@
 <link href="{{ asset('themes/dashboard_v2') }}/assets/plugins/select2/select2.min.css" rel="stylesheet"
     type="text/css" />
 @yield('custom_style')
+@stack('css')
 <!-- Sweet Alert -->
 <link href="{{ asset('themes/dashboard_v2') }}/assets/plugins/sweet-alert2/sweetalert2.min.css" rel="stylesheet"
     type="text/css">

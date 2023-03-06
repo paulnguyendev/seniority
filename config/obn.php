@@ -7,6 +7,17 @@ return [
         'auth' => 'user/auth',
         'homepage' => '',
         'code' => 'SM',
+      
+    ],
+    'license' => [
+        'prefix' => 'ambassador',
+        'prefix_group' => 'mortgage',
+        'title' => 'MORTGAGE AMBASSADOR',
+    ],
+    'non_license' => [
+        'prefix' => 'ambassador',
+        'prefix_group' => 'community',
+        'title' => 'COMMNNITY AMBASSADOR',
     ],
     'mail' => [
         'from' => 'tinidev.com@gmail.com',

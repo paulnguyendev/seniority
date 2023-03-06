@@ -1,5 +1,5 @@
 @extends('core.dashboard')
-@section('page_title', 'List of Mortgage Ambassador')
+@section('page_title', 'List of Community Ambassador')
 @section('custom_style')
     <link href="{{ asset('obn') }}/css/plugin.css" rel="stylesheet">
 @endsection
@@ -9,6 +9,7 @@
         'showButton' => '1',
         'btnUrl' => route("{$routeName}/form"),
     ])
+   
     <div class="row">
         <div class="col-md-12">
             <div class="card">

@@ -1,6 +1,8 @@
 <?php
+
 use Modules\Agent\Entities\AgentModel;
 use Modules\User\Entities\UserModel;
+
 if (!function_exists('get_logo')) {
     function get_logo()
     {
@@ -54,9 +56,8 @@ if (!function_exists('show_phone')) {
     {
         $phone = "+1{$phone}";
         $result = null;
-        if(  preg_match( '/^\+\d(\d{3})(\d{3})(\d{4})$/', $phone,  $matches ) )
-        {
-            $result = "(" . $matches[1] . ") "  .$matches[2] . '-' . $matches[3];
+        if (preg_match('/^\+\d(\d{3})(\d{3})(\d{4})$/', $phone,  $matches)) {
+            $result = "(" . $matches[1] . ") "  . $matches[2] . '-' . $matches[3];
             return $result;
         }
     }
@@ -131,12 +132,23 @@ if (!function_exists('show_agent_type')) {
     function show_agent_type($status = "")
     {
         $xhtml_status = null;
-        if($status) {
+        if ($status) {
             $tpl_status = config('obn.agent_type');
             $current_status = isset($tpl_status[$status]) ? $tpl_status[$status] : $tpl_status['non-licensed'];
             $xhtml_status = sprintf('<span class = "badge badge-boxed  %s">%s</span>', $current_status['class'], $current_status['name']);
         }
         return $xhtml_status;
+    }
+}
+if (!function_exists('get_route_name')) {
+    function get_route_name($prefix, $prefix_group = "")
+    {
+        if ($prefix_group) {
+            $result = "{$prefix}/{$prefix_group}";
+        } else {
+            $result = "{$prefix}";
+        }
+        return $result;
     }
 }
 if (!function_exists('get_url')) {
@@ -146,28 +158,34 @@ if (!function_exists('get_url')) {
         $subArea = get_sub_area();
         $result = null;
         $routeName = null;
-        if($area == 'staffs') {
+        if ($area == 'staffs') {
             $result = route('staffs/dashboard/index');
-            if($type == 'login') {
+            if ($type == 'login') {
                 $result = route('staffs/auth/login');
-            }
-            elseif($type == 'logout') {
+            } elseif ($type == 'logout') {
                 $result = route('staffs/auth/logout');
             }
-        }
-        elseif($area == 'agents') {
-            if($subArea == 'license') {
-                $routeName = "agents/license";
-                $result = route("{$routeName}/dashboard/index");
-                if($type == 'login') {
-                    $result = route("{$routeName}/auth/index");
+        } else {
+            $prefix = config('obn.license.prefix');
+            $prefix_group = config('obn.license.prefix_group');
+            $routeName = get_route_name($prefix, $prefix_group);
+            if ($area == $prefix) {
+                if ($subArea ==  $prefix_group ) {
+                    $result = route("{$routeName}/dashboard/index");
+                    if ($type == 'login') {
+                        $result = route("{$routeName}/auth/login");
+                    } elseif ($type == 'logout') {
+                        $result = route("{$routeName}/auth/logout");
+                    }
                 }
-                elseif($type == 'logout') {
-                    $result = route("{$routeName}/auth/logout");
+            } elseif ($subArea == 'ambassador') {
+                
+                if ($type == 'license_login') {
+                    $result = route("{$routeName}/auth/login");
                 }
             }
-          
         }
+
         return $result;
     }
 }

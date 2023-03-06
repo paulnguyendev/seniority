@@ -8,7 +8,7 @@
     @include('share.page_title', [
         'showButton' => '1',
         'parent' => [
-            'name' => 'Mortgage Ambassador List',
+            'name' => 'Community Ambassador List',
             'url' => route("{$routeName}/index"),
         ],
         'backUrl' => route("{$routeName}/index"),
@@ -128,7 +128,7 @@
                                         @foreach ($agents as $agent)
                                             <option value="{{ $agent['id'] }}"
                                                 {{ $parent_id == $agent['id'] ? 'selected' : '' }}>
-                                                {{ Agent::getLicenseAgentInfo($agent['id'], 'fullname') }}</option>
+                                                {{ Agent::getNonLicenseAgentInfo($agent['id'], 'fullname') }}</option>
                                         @endforeach
                                     </select>
                                     <span class="help-block"></span>

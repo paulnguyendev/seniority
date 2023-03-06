@@ -7,11 +7,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Kalnoy\Nestedset\NodeTrait;
 use Modules\Product\Entities\ProductModel;
 
-class AgentLicenseModel extends Model
+class AgentNonLicenseModel extends Model
 {
     use NodeTrait;
     use HasFactory;
-    protected $table = 'license_agents';
+    protected $table = 'non_license_agents';
     protected $primaryKey = 'id';
     const CREATED_AT = 'created_at';
     const UPDATED_AT = 'updated_at';
@@ -46,6 +46,7 @@ class AgentLicenseModel extends Model
             if(!isset($params['has_root'])) {
                 $query = $query->where('is_root', '0');
             }
+           
             if (isset($params['not_id'])) {
                 $query = $query->where('id', '!=', $params['not_id']);
             }
