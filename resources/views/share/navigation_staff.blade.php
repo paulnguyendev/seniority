@@ -56,11 +56,8 @@
                     <li class="has-submenu"><a href="{{ get_url('dashboard') }}"><i
                                 class="dripicons-device-desktop"></i>Dashboard</a>
                     </li>
-                    <li class="has-submenu"><a href="#"><i class="fas fa-user"></i>Manage Ambassadors</a>
-                        <ul class="submenu">
-                            <li><a href="{{route('staffs/mortgage/index')}}">Mortgage Ambassador</a></li>
-                            <li><a href="{{route('staffs/community/index')}}">Community Ambassador</a></li>
-                        </ul>
+                    <li class="has-submenu"><a href="{{route('staffs/ambassadors/index')}}"><i class="fas fa-user"></i>Manage Ambassadors</a>
+                        
                     </li>
                     <li>
                         <a href="{{ route('staffs/application/index') }}"><i class="fab fa-wpforms"></i>Manage
@@ -68,6 +65,9 @@
                     </li>
                     <li>
                         <a href="{{ route('staffs/product/index') }}"><i class="far fa-folder"></i>Manage Loans</a>
+                    </li>
+                    <li>
+                        <a href="{{ route('staffs/ranking/index') }}"><i class="ti-stats-up"></i>Manage Ranking</a>
                     </li>
                 </ul>
                 <!-- End navigation menu -->

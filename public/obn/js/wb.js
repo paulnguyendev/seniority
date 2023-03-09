@@ -134,7 +134,7 @@ $(document).on('click','a.restore-item',function(e) {
                 }else{
                     if(response.hasOwnProperty('message')) {
                         successNotice(response.message);
-                        WBDatatables.reloadData();
+                        location.reload();
                     }
                 }
                 swal.close();
@@ -192,6 +192,57 @@ $(document).on('click', 'a.remove_item', function (e) {
         closeOnConfirm: false,
         title: data.title?data.title:"Are you sure to perform the delete operation?",
         text: data.message?data.message:"You will not be able to get this data back!",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#FF7043",
+        confirmButtonText: "Yes",
+        cancelButtonText: "No",
+    }, function () {
+        $.ajax({
+            url: url_remove,
+            type: 'DELETE',
+            dataType: 'json',
+            data: data,
+            success: function (response) {
+                if(response.success == false) {
+                    warningNotice(response.message);
+                }else{
+                    if(response.hasOwnProperty('message')) {
+                        successNotice(response.message);
+                    }
+                }
+                swal.close();
+                if (data.redirect) {
+                    window.location = data.redirect;
+                } else if (response.redirect) {
+                    window.location = response.redirect;
+                } else if (response.reload) {
+                    WBDatatables.reloadData();
+                } else {
+                    for (let i = 1; i < rowspan; i++) {
+                        $current_row.next('tr').remove();
+                    }
+                    $current_row.remove();
+                     WBDatatables.reloadData();
+                }
+            },
+            error: function () {
+                swal.close();
+            }
+        });
+    });
+    return false;
+});
+$(document).on('click', 'a.trash_item', function (e) {
+    var url_remove = $(this).attr('href');
+    let rowspan = $(this).closest('td').attr('rowspan') || 0;
+    let $current_row = $(this).closest('tr');
+    var data = $(this).data();
+    swal({
+        showLoaderOnConfirm: true,
+        closeOnConfirm: false,
+        title: data.title?data.title:"Are you sure to perform the trash operation?",
+        text: data.message?data.message:"The data will be moved to the trash",
         type: "warning",
         showCancelButton: true,
         confirmButtonColor: "#FF7043",

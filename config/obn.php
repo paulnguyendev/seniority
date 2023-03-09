@@ -102,6 +102,14 @@ return [
                 'name' => 'Closed',
                 'class' => 'badge-info',
             ],
+            'suspended' => [
+                'name' => 'Suspended',
+                'class' => 'badge-danger',
+            ],
+            'trash' => [
+                'name' => 'Trash',
+                'class' => 'badge-danger',
+            ],
         ],
     ],
     'ticket' => [
@@ -163,6 +171,23 @@ return [
         'closed' => [
             'name' => 'Closed',
             'class' => 'badge-soft-dark',
+        ],
+    ],
+    'ambassador' => [
+        'pending' => [
+            'name' => 'Pending',
+        ],
+        'active' => [
+            'name' => 'Active',
+        ],
+        'suspended' => [
+            'name' => 'Suspended',
+        ],
+        'trash' => [
+            'name' => 'Trash',
+        ],
+        'deleted' => [
+            'name' => 'Deleted',
         ],
     ],
 ];

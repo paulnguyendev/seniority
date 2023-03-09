@@ -55,6 +55,9 @@ class AgentNonLicenseModel extends Model
                     $query = $query->where('status', $params['status']);
                 }
             }
+            else {
+                $query = $query->where('status', 'active');
+            }
             if(isset($params['parent_id'])) {
                 if($params['parent_id']) {
                     $query = $query->where('parent_id', $params['parent_id']);

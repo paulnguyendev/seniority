@@ -54,13 +54,11 @@ class CommunityAmbassadorController extends Controller
     }
     public function form(Request $request)
     {
-        
         $id = $request->id;
         $module = "Community Ambassador";
         $title = "Add New {$module}";
         $item = [];
         $agents = $this->model->listItems(['has_root' => '1'],['task' => 'list']);
-      
         $levels = $this->levelNonLicenseModel->listItems([],['task' => 'list']);
         if ($id) {
             $item = $this->model::findOrFail($id);
@@ -234,7 +232,7 @@ class CommunityAmbassadorController extends Controller
                     $params['password'] = md5($password);
                 }
                 $this->model->saveItem($params, ['task' => 'edit-item']);
-                $msg = "Update Agent Success";
+                $msg = "Update Ambassador Success";
             } else {
                 $params['token'] = md5($params['email'] . time());
                 $params['password'] = md5($password);
@@ -262,7 +260,7 @@ class CommunityAmbassadorController extends Controller
         $task = $request->task;
         $msg = null;
         if ($task == 'restore') {
-            $this->model->saveItem(['id' => $id, 'deleted_at' => NULL], ['task' => 'edit-item']);
+            $this->model->saveItem(['id' => $id, 'status' => 'active'], ['task' => 'edit-item']);
             $msg = "Item restore success";
         }
         return [
@@ -273,7 +271,8 @@ class CommunityAmbassadorController extends Controller
     public function trash(Request $request)
     {
         $id = $request->id;
-        $this->model->saveItem(['id' => $id, 'deleted_at' => date('Y-m-d H:i:s')], ['task' => 'edit-item']);
+        $status = "trash";
+        $this->model->saveItem(['id' => $id, 'status' => $status], ['task' => 'edit-item']);
         return [
             'success' => true,
             'message' => 'Content moved to trash'
@@ -316,7 +315,8 @@ class CommunityAmbassadorController extends Controller
         $verify_code = $request->verify_code;
         $suspend = $suspend == '1' ? "0" : "1";
         $msg = $suspend == '1' ? "Suspended" : "UnSuspended";
-        $this->model->saveItem(['id' => $id, 'is_suppend' => $suspend], ['task' => 'edit-item']);
+        $status = $suspend == '1' ? "suspended" : "active";
+        $this->model->saveItem(['id' => $id, 'is_suppend' => $suspend,'status' => $status], ['task' => 'edit-item']);
         return [
             'success' => true,
             'message' => "{$msg} user successfully"
@@ -335,5 +335,34 @@ class CommunityAmbassadorController extends Controller
             'success' => true,
             'message' => "Send mail verify this user successfully"
         ];
+    }
+    public function showData(Request $request) {
+        $params = $request->all();
+        $column = $params['column'] ?? "";
+        $value = $params['value'] ?? "";
+        $type = $params['type'] ?? "";
+        $items = [];
+        if($type) {
+            if($type == 'search' && !empty($value)) {
+                $items = $this->model->listItems(['title' => $value],['task' => 'search']);
+            }
+            else {
+                $items = $this->model->listItems([],['task' => 'list']);
+            }
+        }
+        else {
+            if($column && $value) {
+                $items = $this->model->listItems([$column => $value],['task' => 'list']);
+            }
+            else {
+                $items = $this->model->listItems([],['task' => 'list']);
+            }
+        }
+        
+        
+        $xthml =  view("staffs.pages.ambassadors.non_license")->with('items', $items)->render();
+        $params['items'] = $items;
+        $params['xthml'] = $xthml;
+        return $params;
     }
 }

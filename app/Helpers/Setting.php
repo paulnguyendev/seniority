@@ -12,5 +12,10 @@ class Setting {
         $result = isset($data['meta_value']) ? $data['meta_value'] : "";
         return $result;
     }
+    public static function updateValue($meta_key, $meta_value) {
+        $model = new SettingModel();
+        $model->saveItem(['meta_key' => $meta_key , 'meta_value' => $meta_value],['task' => 'edit-item']);
+      
+    }
  
 }

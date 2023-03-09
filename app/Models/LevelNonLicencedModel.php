@@ -2,6 +2,8 @@
 namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Modules\LevelLicenced\Entities\ConditionNonLicenseLevelModel;
+
 class LevelNonLicencedModel extends Model
 {
     use HasFactory;
@@ -106,6 +108,6 @@ class LevelNonLicencedModel extends Model
     }
     public function conditionLevel()
     {
-        return $this->hasMany(ConditionLicenseLevelModel::class, 'level_id', 'id');
+        return $this->hasMany(ConditionNonLicenseLevelModel::class, 'level_id', 'id');
     }
 }

@@ -448,6 +448,30 @@ WBDatatablesClass.prototype = {
            
         });
     },
+    addFilterCustom: function (id,element, selector) {
+        var self = this;
+        var html = '<div class="dataTables_filter">' + element + '</div>';
+        $("#" + id).before(html);
+        $(".select2").select2({
+            width: "200px",
+        });
+
+        $('body').on('change', selector, function () {
+            var value = $('body').find(selector).val();
+            var name = $('body').find(selector).attr('name');
+           
+            if($(selector).is("select")) {
+                var url = self.cur_datatatable.ajax.url();
+                if (url.indexOf('?') === -1) {
+                    url += '?' + name + '=' + value;
+                } else {
+                    url += '&' + name + '=' + value;
+                }
+                self.cur_datatatable.ajax.url(url).load();
+            }
+           
+        });
+    },
 
     actionEvent: function (table) {
         var self = this;

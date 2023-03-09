@@ -1,8 +1,11 @@
 <?php
 namespace App\Http\Controllers\Staff;
 use App\Helpers\Agent;
+use App\Helpers\Setting;
 use App\Http\Controllers\Controller;
 use App\Models\AgentLicenseModel as MainModel;
+use App\Models\AgentNonLicenseModel;
+use App\Models\LevelNonLicencedModel;
 use Illuminate\Support\Facades\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -10,19 +13,23 @@ use Modules\Agent\Entities\AgentLicense;
 use Modules\Authen\Emails\SendVerifyEmail;
 use Modules\LevelLicenced\Entities\LevelLicencedModel;
 
-class MortgageAmbassadorController extends Controller
+class RankingController extends Controller
 {
-    private $pathViewController     = "staffs.pages.mortgage";
-    private $controllerName         = "mortgage";
-    private $routeName         = "staffs/mortgage";
+    private $pathViewController     = "staffs.pages.ranking";
+    private $controllerName         = "ranking";
+    private $routeName         = "staffs/ranking";
     private $model;
     private $agentLicenseModel;
+    private $agentNonLicenseModel;
     private $levelLicenseModel;
+    private $levelNonLicenseModel;
     private $params                 = [];
     function __construct()
     {
         $this->model = new MainModel();
         $this->levelLicenseModel = new LevelLicencedModel();
+        $this->levelNonLicenseModel = new LevelNonLicencedModel();
+        $this->agentNonLicenseModel = new AgentNonLicenseModel();
         View::share('controllerName', $this->controllerName);
         View::share('routeName', $this->routeName);
         View::share('pathViewController', $this->pathViewController);
@@ -31,13 +38,20 @@ class MortgageAmbassadorController extends Controller
     {
         $totalAll = $this->model->whereNull('deleted_at')->count();
         $totalTrash = $this->model->whereNotNull('deleted_at')->count();
-        $agents = $this->model->listItems(['has_root' => '1'],['task' => 'list']);
+        $licenses = $this->levelLicenseModel->listItems([],['task' => 'list']);
+        $nonLicenses = $this->levelNonLicenseModel->listItems([],['task' => 'list']);
+       
+        $routeNonLicense = "staffs/community";
+        $routeLicense = "staffs/mortgage";
         return view(
             "{$this->pathViewController}/index",
             [
                 'totalAll' => $totalAll,
                 'totalTrash' => $totalTrash,
-                'agents' => $agents,
+                'licenses' => $licenses,
+                'routeNonLicense' => $routeNonLicense,
+                'nonLicenses' => $nonLicenses,
+                'routeLicense' => $routeLicense,
             ]
         );
     }
@@ -233,7 +247,7 @@ class MortgageAmbassadorController extends Controller
                     $params['password'] = md5($password);
                 }
                 $this->model->saveItem($params, ['task' => 'edit-item']);
-                $msg = "Update Ambassador Success";
+                $msg = "Update Agent Success";
             } else {
                 $params['token'] = md5($params['email'] . time());
                 $params['password'] = md5($password);
@@ -261,7 +275,7 @@ class MortgageAmbassadorController extends Controller
         $task = $request->task;
         $msg = null;
         if ($task == 'restore') {
-            $this->model->saveItem(['id' => $id, 'status' => "active"], ['task' => 'edit-item']);
+            $this->model->saveItem(['id' => $id, 'deleted_at' => NULL], ['task' => 'edit-item']);
             $msg = "Item restore success";
         }
         return [
@@ -272,8 +286,7 @@ class MortgageAmbassadorController extends Controller
     public function trash(Request $request)
     {
         $id = $request->id;
-        $status = "trash";
-        $this->model->saveItem(['id' => $id, 'status' => $status], ['task' => 'edit-item']);
+        $this->model->saveItem(['id' => $id, 'deleted_at' => date('Y-m-d H:i:s')], ['task' => 'edit-item']);
         return [
             'success' => true,
             'message' => 'Content moved to trash'
@@ -316,8 +329,7 @@ class MortgageAmbassadorController extends Controller
         $verify_code = $request->verify_code;
         $suspend = $suspend == '1' ? "0" : "1";
         $msg = $suspend == '1' ? "Suspended" : "UnSuspended";
-        $status = $suspend == '1' ? "suspended" : "active";
-        $this->model->saveItem(['id' => $id, 'is_suppend' => $suspend,'status' => $status], ['task' => 'edit-item']);
+        $this->model->saveItem(['id' => $id, 'is_suppend' => $suspend], ['task' => 'edit-item']);
         return [
             'success' => true,
             'message' => "{$msg} user successfully"
@@ -337,33 +349,11 @@ class MortgageAmbassadorController extends Controller
             'message' => "Send mail verify this user successfully"
         ];
     }
-    public function showData(Request $request) {
+    public function setting(Request $request) {
         $params = $request->all();
-        $column = $params['column'] ?? "";
-        $value = $params['value'] ?? "";
-        $type = $params['type'] ?? "";
-        $items = [];
-        if($type) {
-            if($type == 'search' && !empty($value)) {
-                $items = $this->model->listItems(['title' => $value],['task' => 'search']);
-            }
-            else {
-                $items = $this->model->listItems([],['task' => 'list']);
-            }
-        }
-        else {
-            if($column && $value) {
-                $items = $this->model->listItems([$column => $value],['task' => 'list']);
-            }
-            else {
-                $items = $this->model->listItems([],['task' => 'list']);
-            }
-        }
-        
-        
-        $xthml =  view("staffs.pages.ambassadors.license")->with('items', $items)->render();
-        $params['items'] = $items;
-        $params['xthml'] = $xthml;
+        $meta_key = $params['meta_key'] ?? "";
+        $meta_value = $params['meta_value'] ?? "";
+        Setting::updateValue($meta_key,$meta_value);
         return $params;
     }
 }

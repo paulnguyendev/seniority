@@ -10,6 +10,8 @@ use App\Http\Controllers\Agent\NonLicense\DashboardController as NonLicenseDashb
 use App\Http\Controllers\Staff\DashboardController as StaffDashboardController;
 use App\Http\Controllers\Staff\ApplicationController as StaffApplicationController;
 use App\Http\Controllers\Staff\ProductController as StaffProductController;
+use App\Http\Controllers\Staff\AmbassadorController as StaffAmbassadorController;
+use App\Http\Controllers\Staff\RankingController as StaffRankingController;
 use App\Http\Controllers\Staff\MortgageAmbassadorController as StaffMortgageAmbassadorController;
 use App\Http\Controllers\Staff\CommunityAmbassadorController as StaffCommunityAmbassadorController;
 
@@ -96,7 +98,7 @@ Route::prefix($prefix)->group(function () use ($prefix) {
    });
    // Fai login mới vào được
    Route::middleware('access.staffDashboard')->group(function () use ($prefix) {
-      Route::prefix('')->controller(StaffDashboardController::class)->group(function () use ($prefix) {
+      Route::prefix('')->controller(StaffAmbassadorController::class)->group(function () use ($prefix) {
          $routeName = "{$prefix}/dashboard";
          Route::get('/', 'index')->name($routeName . '/index');
          Route::post('/updateSetting', 'updateSetting')->name($routeName . '/updateSetting');
@@ -114,6 +116,38 @@ Route::prefix($prefix)->group(function () use ($prefix) {
          Route::delete('/trashDestroy', 'trashDestroy')->name($routeName . '/trashDestroy');
          Route::get('/list-trash', 'trashIndex')->name($routeName . '/trashIndex');
       });
+      Route::prefix('ranking')->controller(StaffRankingController::class)->group(function () use ($prefix) {
+         $routeName = "{$prefix}/ranking";
+         Route::get('/', 'index')->name($routeName . '/index');
+         Route::get('/form/{id?}', 'form')->name($routeName . '/form');
+         Route::get('/data', 'data')->name($routeName . '/data');
+         Route::post('/save/{id?}', 'save')->name($routeName . '/save');
+         Route::post('/updateField/{task?}/{id?}', 'updateField')->name($routeName . '/updateField');
+         Route::delete('/trash/{id}', 'trash')->name($routeName . '/trash');
+         Route::delete('/delete/{id}', 'delete')->name($routeName . '/delete');
+         Route::delete('/destroy', 'destroy')->name($routeName . '/destroy');
+         Route::delete('/trashDestroy', 'trashDestroy')->name($routeName . '/trashDestroy');
+         Route::get('/list-trash', 'trashIndex')->name($routeName . '/trashIndex');
+         Route::post('/suspend/{id?}/{suspend?}', 'suspend')->name($routeName . '/suspend');
+         Route::post('/sendMailVerify/{email?}/{token?}/{verify_code?}', 'sendMailVerify')->name($routeName . '/sendMailVerify');
+         Route::post('/setting', 'setting')->name($routeName . '/setting');
+      });
+      Route::prefix('ambassadors')->controller(StaffAmbassadorController::class)->group(function () use ($prefix) {
+         $routeName = "{$prefix}/ambassadors";
+         Route::get('/', 'index')->name($routeName . '/index');
+         Route::get('/form/{id?}', 'form')->name($routeName . '/form');
+         Route::get('/data', 'data')->name($routeName . '/data');
+         Route::post('/save/{id?}', 'save')->name($routeName . '/save');
+         Route::post('/updateField/{task?}/{id?}', 'updateField')->name($routeName . '/updateField');
+         Route::delete('/trash/{id}', 'trash')->name($routeName . '/trash');
+         Route::delete('/delete/{id}', 'delete')->name($routeName . '/delete');
+         Route::delete('/destroy', 'destroy')->name($routeName . '/destroy');
+         Route::delete('/trashDestroy', 'trashDestroy')->name($routeName . '/trashDestroy');
+         Route::get('/list-trash', 'trashIndex')->name($routeName . '/trashIndex');
+         Route::post('/suspend/{id?}/{suspend?}', 'suspend')->name($routeName . '/suspend');
+         Route::post('/sendMailVerify/{email?}/{token?}/{verify_code?}', 'sendMailVerify')->name($routeName . '/sendMailVerify');
+         Route::post('/setting', 'setting')->name($routeName . '/setting');
+      });
       Route::prefix('mortgage-ambassador')->controller(StaffMortgageAmbassadorController::class)->group(function () use ($prefix) {
          $routeName = "{$prefix}/mortgage";
          Route::get('/', 'index')->name($routeName . '/index');
@@ -128,12 +162,14 @@ Route::prefix($prefix)->group(function () use ($prefix) {
          Route::get('/list-trash', 'trashIndex')->name($routeName . '/trashIndex');
          Route::post('/suspend/{id?}/{suspend?}', 'suspend')->name($routeName . '/suspend');
          Route::post('/sendMailVerify/{email?}/{token?}/{verify_code?}', 'sendMailVerify')->name($routeName . '/sendMailVerify');
+         Route::get('/showData', 'showData')->name($routeName . '/showData');
       });
       Route::prefix('community-ambassador')->controller(StaffCommunityAmbassadorController::class)->group(function () use ($prefix) {
          $routeName = "{$prefix}/community";
          Route::get('/', 'index')->name($routeName . '/index');
          Route::get('/form/{id?}', 'form')->name($routeName . '/form');
          Route::get('/data', 'data')->name($routeName . '/data');
+         Route::get('/showData', 'showData')->name($routeName . '/showData');
          Route::post('/save/{id?}', 'save')->name($routeName . '/save');
          Route::post('/updateField/{task?}/{id?}', 'updateField')->name($routeName . '/updateField');
          Route::delete('/trash/{id}', 'trash')->name($routeName . '/trash');

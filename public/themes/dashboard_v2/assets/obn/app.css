@@ -206,6 +206,101 @@ body {
 .agent-info.active {
     margin-top: 20px;
 }
+.material-switch > input[type="checkbox"] {
+    display: none;   
+}
+
+.material-switch > label {
+    cursor: pointer;
+    height: 0px;
+    position: relative; 
+    width: 40px;  
+}
+
+.material-switch > label::before {
+    background: rgb(0, 0, 0);
+    box-shadow: inset 0px 0px 10px rgba(0, 0, 0, 0.5);
+    border-radius: 8px;
+    content: '';
+    height: 16px;
+    margin-top: -8px;
+    position:absolute;
+    opacity: 0.3;
+    transition: all 0.4s ease-in-out;
+    width: 40px;
+}
+.material-switch > label::after {
+    background: rgb(255, 255, 255);
+    border-radius: 16px;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+    content: '';
+    height: 24px;
+    left: -4px;
+    margin-top: -8px;
+    position: absolute;
+    top: -4px;
+    transition: all 0.3s ease-in-out;
+    width: 24px;
+}
+.material-switch > input[type="checkbox"]:checked + label::before {
+    background: inherit;
+    opacity: 0.5;
+}
+.material-switch > input[type="checkbox"]:checked + label::after {
+    background: inherit;
+    left: 20px;
+}
+.checkbox-table {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    padding: 15px;
+    border-radius: 5px;
+}
+
+.checkbox-table .checkbox-group > *:first-child {
+    margin-right: 15px;
+}
+
+.checkbox-table .checkbox-group > label {
+    margin-bottom: 0;
+}
+
+.checkbox-table > *:not(:last-child) {
+    margin-right: 15px;
+    border-right: 1px solid #ccc;
+    padding-right: 20px;
+}
+.obn-card-title {
+  
+    margin-bottom: 0;
+    color: var(--danger);
+}
+.table-header-left {
+    position: relative;
+    display: block;
+    float: left;
+    margin: 0 0 20px 20px;
+    margin-left: 0;
+}
+.table-header-right {
+    position: relative;
+    display: block;
+    float: right;
+}
+.card-header-obn {
+    border-bottom: 1px solid #eeee;
+   padding:15px;
+    background: var(--dark);
+}
+
+.card-header-obn > * {
+    color: #fff;
+}
+.btn-primary.active, .btn-primary.active.focus, .btn-primary.active:focus, .btn-primary.active:hover, .btn-primary.focus, .btn-primary:active, .btn-primary:active.focus, .btn-primary:active:focus, .btn-primary:active:hover, .btn-primary:focus, .btn-primary:hover, .open>.dropdown-toggle.btn-primary, .open>.dropdown-toggle.btn-primary.focus, .open>.dropdown-toggle.btn-primary:focus, .open>.dropdown-toggle.btn-primary:hover {
+    background-color: var(--color-main)!important;
+    border-color: var(--color-main)!important;
+}
 @media screen and (max-width: 767.98px) {
     #topnav .navigation-menu > li > a {
         color: #2d3b48;

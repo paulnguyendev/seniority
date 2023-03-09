@@ -8,10 +8,10 @@
     @include('share.page_title', [
         'showButton' => '1',
         'parent' => [
-            'name' => 'List of Ambassadors',
-            'url' => route("staffs/ambassadors/index"),
+            'name' => 'Mortgage Ambassador List',
+            'url' => route("{$routeName}/index"),
         ],
-        'backUrl' => route("staffs/ambassadors/index"),
+        'backUrl' => route("{$routeName}/index"),
     ])
     <div class="row">
         <div class="col-md-12">
