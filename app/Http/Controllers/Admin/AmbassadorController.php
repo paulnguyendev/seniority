@@ -1,11 +1,10 @@
 <?php
-namespace App\Http\Controllers\Staff;
+namespace App\Http\Controllers\Admin;
 use App\Helpers\Agent;
 use App\Helpers\Setting;
 use App\Http\Controllers\Controller;
 use App\Models\AgentLicenseModel as MainModel;
 use App\Models\AgentNonLicenseModel;
-use App\Models\LevelNonLicencedModel;
 use Illuminate\Support\Facades\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -13,22 +12,20 @@ use Modules\Agent\Entities\AgentLicense;
 use Modules\Authen\Emails\SendVerifyEmail;
 use Modules\LevelLicenced\Entities\LevelLicencedModel;
 
-class RankingController extends Controller
+class AmbassadorController extends Controller
 {
-    private $pathViewController     = "staffs.pages.ranking";
-    private $controllerName         = "ranking";
-    private $routeName         = "staffs/ranking";
+    private $pathViewController     = "staffs.pages.ambassadors";
+    private $controllerName         = "ambassadors";
+    private $routeName         = "admin/ambassadors";
     private $model;
     private $agentLicenseModel;
     private $agentNonLicenseModel;
     private $levelLicenseModel;
-    private $levelNonLicenseModel;
     private $params                 = [];
     function __construct()
     {
         $this->model = new MainModel();
         $this->levelLicenseModel = new LevelLicencedModel();
-        $this->levelNonLicenseModel = new LevelNonLicencedModel();
         $this->agentNonLicenseModel = new AgentNonLicenseModel();
         View::share('controllerName', $this->controllerName);
         View::share('routeName', $this->routeName);
@@ -38,11 +35,10 @@ class RankingController extends Controller
     {
         $totalAll = $this->model->whereNull('deleted_at')->count();
         $totalTrash = $this->model->whereNotNull('deleted_at')->count();
-        $licenses = $this->levelLicenseModel->listItems([],['task' => 'list']);
-        $nonLicenses = $this->levelNonLicenseModel->listItems([],['task' => 'list']);
-       
-        $routeNonLicense = "staffs/community_ranking";
-        $routeLicense = "staffs/mortgage_ranking";
+        $licenses = $this->model->listItems([],['task' => 'list']);
+        $nonLicenses = $this->agentNonLicenseModel->listItems([],['task' => 'list']);
+        $routeNonLicense = "admin/community";
+        $routeLicense = "admin/mortgage";
         return view(
             "{$this->pathViewController}/index",
             [

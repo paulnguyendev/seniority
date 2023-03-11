@@ -19,7 +19,8 @@
                             <tr>
                                 <th class="text-center" width="50"><input type="checkbox" bs-type="checkbox" value="all"
                                         id="inputCheckAll"></th>
-                                <th>Application Info</th>
+                                <th>Loan ID</th>
+                                <th>Application ID</th>
                                 <th>Ambassador Info</th>
                                 <th>Amount</th>
                                 <th class="text-center">Status</th>
@@ -46,6 +47,14 @@
                 data: null,
                 render: function(data) {
                     return WBDatatables.showSelect(data.id);
+                },
+                orderable: false,
+                searchable: false
+            },
+            {
+                data: null,
+                render: function(data) {
+                    return (data.code) ? data.code : '';
                 },
                 orderable: false,
                 searchable: false
@@ -95,21 +104,21 @@
                 orderable: false,
                 searchable: false
             },
-            {
-                data: null,
-                class: 'option-actions text-right no-padding-right',
-                render: function(data) {
-                    let xhtml = "";
-                    xhtml += `<div class="button-items text-right">`;
-                    xhtml += `  <a href="${data.route_edit}" class="btn btn-info waves-effect waves-light btn-sm">
-                            <i class="fas fa-eye mr-2"></i> View
-                        </a>`;
-                    xhtml += `</div>`;
-                    return xhtml;
-                },
-                orderable: false,
-                searchable: false
-            },
+            // {
+            //     data: null,
+            //     class: 'option-actions text-right no-padding-right',
+            //     render: function(data) {
+            //         let xhtml = "";
+            //         xhtml += `<div class="button-items text-right">`;
+            //         xhtml += `  <a href="${data.route_edit}" class="btn btn-info waves-effect waves-light btn-sm">
+            //                 <i class="fas fa-eye mr-2"></i> View
+            //             </a>`;
+            //         xhtml += `</div>`;
+            //         return xhtml;
+            //     },
+            //     orderable: false,
+            //     searchable: false
+            // },
             {
                 data: null,
                 render: function(data) {

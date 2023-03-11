@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\ApplicationModel;
 use Modules\Agent\Entities\AgentModel;
 use Modules\User\Entities\UserModel;
 
@@ -62,6 +63,13 @@ if (!function_exists('show_phone')) {
         }
     }
 }
+if (!function_exists('show_price')) {
+    function show_price($price)
+    {
+       $result = "$ " .  number_format($price, 2,'.', ',');
+       return $result;
+    }
+}
 if (!function_exists('get_thumbnail_url')) {
     function get_thumbnail_url($thumbnail = "")
     {
@@ -92,6 +100,15 @@ if (!function_exists('random_code')) {
             $code = random_int(100000, 999999);
         } while (AgentModel::where("code", "=", $code)->first());
         return config('obn.prefix.code') . $code;
+    }
+}
+if (!function_exists('application_random_code')) {
+    function application_random_code()
+    {
+        do {
+            $code = random_int(100000, 999999);
+        } while (ApplicationModel::where("code", "=", $code)->first());
+        return config('obn.prefix.application_code') . $code;
     }
 }
 if (!function_exists('random_verify_code')) {

@@ -19,6 +19,7 @@
                             <tr>
                                 <th class="text-center" width="50"><input type="checkbox" bs-type="checkbox" value="all"
                                         id="inputCheckAll"></th>
+                                <th>Application ID</th>
                                 <th>Fullname</th>
                                 <th>Email</th>
                                 <th>Mobile</th>
@@ -47,6 +48,14 @@
                 data: null,
                 render: function(data) {
                     return WBDatatables.showSelect(data.id);
+                },
+                orderable: false,
+                searchable: false
+            },
+            {
+                data: null,
+                render: function(data) {
+                    return (data.code) ? data.code : '';
                 },
                 orderable: false,
                 searchable: false

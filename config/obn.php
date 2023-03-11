@@ -7,6 +7,7 @@ return [
         'auth' => 'user/auth',
         'homepage' => '',
         'code' => 'SM',
+        'application_code' => 'SMA',
       
     ],
     'license' => [
@@ -20,7 +21,7 @@ return [
         'title' => 'COMMNNITY AMBASSADOR',
     ],
     'mail' => [
-        'from' => 'tinidev.com@gmail.com',
+        'from' => 'anhnnd.hotro@gmail.com',
         'brand' => 'Seniority',
         'subject' => [
             'register_user' => 'Thông Tin Xác Thực Tài Khoản',

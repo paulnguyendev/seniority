@@ -8,11 +8,7 @@
     @php
         $area = get_area();
     @endphp
-    @if ($area == 'staffs')
-        @include('share.navigation_staff')
-    @elseif($area == 'ambassador')
-        @include('share.navigation_agent')
-    @endif
+    @include("share.navigation_{$area}")
     <!-- End Navigation Bar-->
     <div class="wrapper">
         <div class="container-fluid">

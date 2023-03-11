@@ -2,16 +2,16 @@
 namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-class ProductModel extends Model
+class LicenseTransactionModel extends Model
 {
     use HasFactory;
-    protected $table = 'products';
+    protected $table = 'license_transactions';
     protected $primaryKey = 'id';
     const CREATED_AT = 'created_at';
     const UPDATED_AT = 'updated_at';
     protected $fieldSearchAccepted = ['email', 'mobile', 'first_name', 'middle_name', 'last_name'];
     protected $crudNotAccepted = ['_token', 'user_id', 'sponsor_id'];
-    protected $fillable = ['code','first_name','middle_name','last_name','email','mobile','agent_id','total','status','created_at','updated_at','agent_id','application_id'];
+    protected $fillable = ['product_id','agent_id','total','type','status','note','created_at','updated_at'];
     // protected static function newFactory()
     // {
     //     return \Modules\User\Database\factories\UserModelFactory::new();
@@ -19,7 +19,7 @@ class ProductModel extends Model
     public function listItems($params = "", $options = "")
     {
         $result = null;
-        $query = $this->select('id','code','first_name','middle_name','last_name','email','mobile','agent_id','total','status','created_at','updated_at','application_id');
+        $query = $this->select('id','product_id','agent_id','total','type','status','note','created_at','updated_at');
         if ($options['task'] == 'all') {
             if (isset($params['not_id'])) {
                 $query = $query->where('id', '!=', $params['not_id']);
@@ -69,12 +69,15 @@ class ProductModel extends Model
     }
     public function getItem($params = [], $options = [])
     {
-        $query = $this->select('id', 'code','first_name','middle_name','last_name','email','mobile','agent_id','total','status','created_at','updated_at');
+        $query = $this->select('id', 'product_id','agent_id','total','type','status','note','created_at','updated_at');
         if ($options['task'] == 'id') {
             $result = $query->where('id', $params['user_id'])->first();
         }
         if ($options['task'] == 'code') {
             $result = $query->where('code', $params['code'])->first();
+        }
+        if ($options['task'] == 'check_exist') {
+            $result = $query->where('product_id', $params['product_id'])->where('agent_id', $params['agent_id'])->first();
         }
         return $result;
     }

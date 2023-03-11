@@ -1,5 +1,5 @@
 <?php
-namespace App\Http\Controllers\Staff;
+namespace App\Http\Controllers\Admin;
 use App\Helpers\Agent;
 use App\Helpers\Setting;
 use App\Http\Controllers\Controller;
@@ -17,7 +17,7 @@ class RankingController extends Controller
 {
     private $pathViewController     = "staffs.pages.ranking";
     private $controllerName         = "ranking";
-    private $routeName         = "staffs/ranking";
+    private $routeName         = "admin/ranking";
     private $model;
     private $agentLicenseModel;
     private $agentNonLicenseModel;
@@ -41,8 +41,8 @@ class RankingController extends Controller
         $licenses = $this->levelLicenseModel->listItems([],['task' => 'list']);
         $nonLicenses = $this->levelNonLicenseModel->listItems([],['task' => 'list']);
        
-        $routeNonLicense = "staffs/community_ranking";
-        $routeLicense = "staffs/mortgage_ranking";
+        $routeNonLicense = "admin/community_ranking";
+        $routeLicense = "admin/mortgage_ranking";
         return view(
             "{$this->pathViewController}/index",
             [

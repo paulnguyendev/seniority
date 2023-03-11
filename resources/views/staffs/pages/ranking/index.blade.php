@@ -29,11 +29,7 @@
                     
                     </div>
                     <div class="card-body">
-                        @include("{$pathViewController}/table_header", [
-                            'routeName' => $routeLicense,
-                            'table' => 'licences',
-                            'items' => $licenses,
-                        ])
+                       
                         <table class="table table-xlg non-license-data obn-table" id="licences">
                             <thead>
                                 <tr>
@@ -64,8 +60,7 @@
                     </div>
                     <div class="card-body">
 
-                        <table class="table table-xlg non-license-data" data-source="{{ route("{$routeNonLicense}/data") }}"
-                            data-destroymulti="{{ route("{$routeNonLicense}/trashDestroy") }}" id="non-licences">
+                        <table class="table table-xlg non-license-data"  id="non-licences">
                             <thead>
                                 <tr>
                                     <th class="text-center">Number</th>
@@ -76,7 +71,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @include("{$pathViewController}/license", [
+                                @include("{$pathViewController}/non_license", [
                                     'items' => $nonLicenses,
                                     'routeName' => $routeNonLicense,
                                     'unit' => "$",

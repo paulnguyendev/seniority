@@ -82,14 +82,12 @@ class ConditionLicenseLevelModel extends Model
     {
         if ($option['task'] == 'add-item') {
             $paramsInsert = array_diff_key($params, array_flip($this->crudNotAccepted));
-            $parent = self::find($params['parent_id']);
-            $result =    self::create($paramsInsert, $parent);
+            $result =    self::create($paramsInsert);
             return $result;
         }
         if ($option['task'] == 'edit-item') {
-            $node = self::find($params['id']);
             $paramsUpdate = array_diff_key($params, array_flip($this->crudNotAccepted));
-            $node->update($paramsUpdate);
+            self::where('id', $params['id'])->update($paramsUpdate);
         }
     }
     public function deleteItem($params = "", $option = "")

@@ -20,6 +20,14 @@
                     <form action="{{ !$id ? route("{$routeName}/save") : route("{$routeName}/save", ['id' => $id]) }}"
                         method="post" id="form-save" enctype="multipart/form-data">
                         <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="code">Application ID (*)</label>
+                                    <input type="text" class="form-control" name="code" id="code"
+                                        value="{{ $item['code'] ?? application_random_code() }}" readonly>
+                                    <span class="help-block"></span>
+                                </div>
+                            </div>
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="first_name">First Name (*)</label>

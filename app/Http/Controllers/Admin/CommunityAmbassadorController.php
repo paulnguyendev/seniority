@@ -1,10 +1,8 @@
 <?php
-namespace App\Http\Controllers\Staff;
+namespace App\Http\Controllers\Admin;
 use App\Helpers\Agent;
-use App\Helpers\Setting;
 use App\Http\Controllers\Controller;
-use App\Models\AgentLicenseModel as MainModel;
-use App\Models\AgentNonLicenseModel;
+use App\Models\AgentNonLicenseModel as MainModel;
 use App\Models\LevelNonLicencedModel;
 use Illuminate\Support\Facades\View;
 use Illuminate\Http\Request;
@@ -12,15 +10,13 @@ use Illuminate\Support\Facades\Mail;
 use Modules\Agent\Entities\AgentLicense;
 use Modules\Authen\Emails\SendVerifyEmail;
 use Modules\LevelLicenced\Entities\LevelLicencedModel;
-
-class RankingController extends Controller
+class CommunityAmbassadorController extends Controller
 {
-    private $pathViewController     = "staffs.pages.ranking";
-    private $controllerName         = "ranking";
-    private $routeName         = "staffs/ranking";
+    private $pathViewController     = "staffs.pages.community";
+    private $controllerName         = "community";
+    private $routeName         = "admin/community";
     private $model;
     private $agentLicenseModel;
-    private $agentNonLicenseModel;
     private $levelLicenseModel;
     private $levelNonLicenseModel;
     private $params                 = [];
@@ -29,29 +25,21 @@ class RankingController extends Controller
         $this->model = new MainModel();
         $this->levelLicenseModel = new LevelLicencedModel();
         $this->levelNonLicenseModel = new LevelNonLicencedModel();
-        $this->agentNonLicenseModel = new AgentNonLicenseModel();
         View::share('controllerName', $this->controllerName);
         View::share('routeName', $this->routeName);
         View::share('pathViewController', $this->pathViewController);
     }
     public function index(Request $request)
     {
-        $totalAll = $this->model->whereNull('deleted_at')->count();
-        $totalTrash = $this->model->whereNotNull('deleted_at')->count();
-        $licenses = $this->levelLicenseModel->listItems([],['task' => 'list']);
-        $nonLicenses = $this->levelNonLicenseModel->listItems([],['task' => 'list']);
-       
-        $routeNonLicense = "staffs/community_ranking";
-        $routeLicense = "staffs/mortgage_ranking";
+        $totalAll = $this->model->where('is_root','0')->whereNull('deleted_at')->count();
+        $totalTrash = $this->model->where('is_root','0')->whereNotNull('deleted_at')->count();
+        $agents = $this->model->listItems([],['task' => 'list']);
         return view(
             "{$this->pathViewController}/index",
             [
                 'totalAll' => $totalAll,
                 'totalTrash' => $totalTrash,
-                'licenses' => $licenses,
-                'routeNonLicense' => $routeNonLicense,
-                'nonLicenses' => $nonLicenses,
-                'routeLicense' => $routeLicense,
+                'agents' => $agents,
             ]
         );
     }
@@ -67,12 +55,11 @@ class RankingController extends Controller
     public function form(Request $request)
     {
         $id = $request->id;
-        $module = "Mortgage Ambassador";
+        $module = "Community Ambassador";
         $title = "Add New {$module}";
         $item = [];
         $agents = $this->model->listItems(['has_root' => '1'],['task' => 'list']);
-        $levels = $this->levelLicenseModel->listItems([],['task' => 'list']);
-       
+        $levels = $this->levelNonLicenseModel->listItems([],['task' => 'list']);
         if ($id) {
             $item = $this->model::findOrFail($id);
             $title = "Edit {$module}";
@@ -124,8 +111,8 @@ class RankingController extends Controller
             $item['route_remove'] = route("{$this->routeName}/trash", ['id' => $item['id']]);
             $item['route_delete'] = route("{$this->routeName}/delete", ['id' => $item['id']]);
             $parent_id = $item['parent_id'];
-            $item['user_info'] = Agent::showInfo($id);
-            $item['sponsor_info'] = $parent_id ?  Agent::showInfo($parent_id) : "";
+            $item['user_info'] = Agent::showInfo($id,'non_license');
+            $item['sponsor_info'] = $parent_id ?  Agent::showInfo($parent_id,'non_license') : "";
             $item['status'] = show_status($item['status']);
             $thumbnail = $item['thumbnail'] ?? get_default_thumbnail_url();
             $item['thumbnail'] = get_thumbnail_url($thumbnail);
@@ -162,7 +149,6 @@ class RankingController extends Controller
         $password = isset($params['password']) ? $params['password'] : "";
         $code = isset($params['code']) ? $params['code'] : "";
         $status = isset($params['status']) ? $params['status'] : "";
-       
         if (!$first_name) {
             $error['first_name'] = "Please enter first name";
         }
@@ -193,7 +179,6 @@ class RankingController extends Controller
         if (!$level_id) {
             $error['level_id'] = "Please choose Level";
         }
-     
         if (empty($error)) {
             $checkMail = $this->model->getItem(['email' => $email], ['task' => 'email']);
             $checkMobile = $this->model->getItem(['mobile' => $mobile], ['task' => 'mobile']);
@@ -247,11 +232,11 @@ class RankingController extends Controller
                     $params['password'] = md5($password);
                 }
                 $this->model->saveItem($params, ['task' => 'edit-item']);
-                $msg = "Update Agent Success";
+                $msg = "Update Ambassador Success";
             } else {
                 $params['token'] = md5($params['email'] . time());
                 $params['password'] = md5($password);
-                $msg = "Add Agent Success";
+                $msg = "Add Community Ambassador Success";
                 $this->model->saveItem($params, ['task' => 'add-item']);
                 $params['redirect'] = route("{$this->routeName}/index");
             }
@@ -275,7 +260,7 @@ class RankingController extends Controller
         $task = $request->task;
         $msg = null;
         if ($task == 'restore') {
-            $this->model->saveItem(['id' => $id, 'deleted_at' => NULL], ['task' => 'edit-item']);
+            $this->model->saveItem(['id' => $id, 'status' => 'active'], ['task' => 'edit-item']);
             $msg = "Item restore success";
         }
         return [
@@ -286,7 +271,8 @@ class RankingController extends Controller
     public function trash(Request $request)
     {
         $id = $request->id;
-        $this->model->saveItem(['id' => $id, 'deleted_at' => date('Y-m-d H:i:s')], ['task' => 'edit-item']);
+        $status = "trash";
+        $this->model->saveItem(['id' => $id, 'status' => $status], ['task' => 'edit-item']);
         return [
             'success' => true,
             'message' => 'Content moved to trash'
@@ -329,7 +315,8 @@ class RankingController extends Controller
         $verify_code = $request->verify_code;
         $suspend = $suspend == '1' ? "0" : "1";
         $msg = $suspend == '1' ? "Suspended" : "UnSuspended";
-        $this->model->saveItem(['id' => $id, 'is_suppend' => $suspend], ['task' => 'edit-item']);
+        $status = $suspend == '1' ? "suspended" : "active";
+        $this->model->saveItem(['id' => $id, 'is_suppend' => $suspend,'status' => $status], ['task' => 'edit-item']);
         return [
             'success' => true,
             'message' => "{$msg} user successfully"
@@ -349,11 +336,33 @@ class RankingController extends Controller
             'message' => "Send mail verify this user successfully"
         ];
     }
-    public function setting(Request $request) {
+    public function showData(Request $request) {
         $params = $request->all();
-        $meta_key = $params['meta_key'] ?? "";
-        $meta_value = $params['meta_value'] ?? "";
-        Setting::updateValue($meta_key,$meta_value);
+        $column = $params['column'] ?? "";
+        $value = $params['value'] ?? "";
+        $type = $params['type'] ?? "";
+        $items = [];
+        if($type) {
+            if($type == 'search' && !empty($value)) {
+                $items = $this->model->listItems(['title' => $value],['task' => 'search']);
+            }
+            else {
+                $items = $this->model->listItems([],['task' => 'list']);
+            }
+        }
+        else {
+            if($column && $value) {
+                $items = $this->model->listItems([$column => $value],['task' => 'list']);
+            }
+            else {
+                $items = $this->model->listItems([],['task' => 'list']);
+            }
+        }
+        
+        
+        $xthml =  view("staffs.pages.ambassadors.non_license")->with('items', $items)->render();
+        $params['items'] = $items;
+        $params['xthml'] = $xthml;
         return $params;
     }
 }

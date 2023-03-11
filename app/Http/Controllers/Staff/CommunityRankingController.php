@@ -3,22 +3,24 @@ namespace App\Http\Controllers\Staff;
 use App\Helpers\Agent;
 use App\Helpers\Setting;
 use App\Http\Controllers\Controller;
-use App\Models\AgentLicenseModel as MainModel;
+use App\Models\AgentLicenseModel ;
 use App\Models\AgentNonLicenseModel;
-use App\Models\LevelNonLicencedModel;
+use App\Models\LevelNonLicencedModel as MainModel;
 use Illuminate\Support\Facades\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Modules\Agent\Entities\AgentLicense;
 use Modules\Authen\Emails\SendVerifyEmail;
-use Modules\LevelLicenced\Entities\LevelLicencedModel;
-
-class RankingController extends Controller
+use Modules\LevelLicenced\Entities\ConditionLicenseLevelModel;
+use Modules\LevelLicenced\Entities\ConditionNonLicenseLevelModel;
+use Modules\LevelLicenced\Entities\LevelLicencedModel ;
+class CommunityRankingController extends Controller
 {
-    private $pathViewController     = "staffs.pages.ranking";
-    private $controllerName         = "ranking";
-    private $routeName         = "staffs/ranking";
+    private $pathViewController     = "staffs.pages.community_ranking";
+    private $controllerName         = "community_ranking";
+    private $routeName         = "staffs/community_ranking";
     private $model;
+    private $conditionLicenceModel;
     private $agentLicenseModel;
     private $agentNonLicenseModel;
     private $levelLicenseModel;
@@ -27,9 +29,9 @@ class RankingController extends Controller
     function __construct()
     {
         $this->model = new MainModel();
-        $this->levelLicenseModel = new LevelLicencedModel();
-        $this->levelNonLicenseModel = new LevelNonLicencedModel();
+        
         $this->agentNonLicenseModel = new AgentNonLicenseModel();
+        $this->conditionLicenceModel = new ConditionNonLicenseLevelModel();
         View::share('controllerName', $this->controllerName);
         View::share('routeName', $this->routeName);
         View::share('pathViewController', $this->pathViewController);
@@ -40,9 +42,8 @@ class RankingController extends Controller
         $totalTrash = $this->model->whereNotNull('deleted_at')->count();
         $licenses = $this->levelLicenseModel->listItems([],['task' => 'list']);
         $nonLicenses = $this->levelNonLicenseModel->listItems([],['task' => 'list']);
-       
-        $routeNonLicense = "staffs/community_ranking";
-        $routeLicense = "staffs/mortgage_ranking";
+        $routeNonLicense = "staffs/community";
+        $routeLicense = "staffs/mortgage";
         return view(
             "{$this->pathViewController}/index",
             [
@@ -67,16 +68,16 @@ class RankingController extends Controller
     public function form(Request $request)
     {
         $id = $request->id;
-        $module = "Mortgage Ambassador";
+        $rankings = $this->model->listItems([],['task' => 'list']);
+        $module = "Mortgage Ranking";
         $title = "Add New {$module}";
         $item = [];
-        $agents = $this->model->listItems(['has_root' => '1'],['task' => 'list']);
-        $levels = $this->levelLicenseModel->listItems([],['task' => 'list']);
-       
+        $itemCondition = [];
         if ($id) {
+            $rankings = $this->model->listItems(['not_id' => $id],['task' => 'list']);
             $item = $this->model::findOrFail($id);
+            $itemCondition = $item->conditionLevel()->first();
             $title = "Edit {$module}";
-            $agents = $this->model->listItems(['not_id' => $id,'has_root' => '1'],['task' => 'list']);
         }
         return view(
             "{$this->pathViewController}/form",
@@ -84,8 +85,8 @@ class RankingController extends Controller
                 'title' => $title,
                 'id' => $id,
                 'item' => $item,
-                'agents' => $agents,
-                'levels' => $levels,
+                'rankings' => $rankings,
+                'itemCondition' => $itemCondition,
             ]
         );
     }
@@ -151,107 +152,35 @@ class RankingController extends Controller
         $curentUsername = null;
         $curentPassword = null;
         $curentCode = null;
-        $parent_id = isset($params['parent_id']) ? $params['parent_id'] : "";
-        $level_id = isset($params['level_id']) ? $params['level_id'] : "";
-        $first_name = isset($params['first_name']) ? $params['first_name'] : "";
-        $last_name = isset($params['last_name']) ? $params['last_name'] : "";
-        $email = isset($params['email']) ? $params['email'] : "";
-        $mobile = isset($params['mobile']) ? $params['mobile'] : "";
-        $mobile = $mobile ? clean($mobile) : "";
-        $username = isset($params['username']) ? $params['username'] : "";
-        $password = isset($params['password']) ? $params['password'] : "";
-        $code = isset($params['code']) ? $params['code'] : "";
-        $status = isset($params['status']) ? $params['status'] : "";
-       
-        if (!$first_name) {
-            $error['first_name'] = "Please enter first name";
+        $name = isset($params['name']) ? $params['name'] : "";
+        $personal_payout = isset($params['personal_payout']) ? $params['personal_payout'] : "";
+        $team_overrides = isset($params['team_overrides']) ? $params['team_overrides'] : "";
+        $condition_license_levels = isset($params['condition_license_levels']) ? $params['condition_license_levels'] : [];
+        $condition_id = isset($params['condition_id']) ? $params['condition_id'] : "";
+        if (!$name) {
+            $error['name'] = "Please enter ranking name";
         }
-        if (!$last_name) {
-            $error['last_name'] = "Please enter last name";
+        if (!$personal_payout) {
+            $error['personal_payout'] = "Please enter personal payout";
         }
-        if (!$email) {
-            $error['email'] = "Please enter email";
-        } else {
-        }
-        if (!$mobile) {
-            $error['mobile'] = "Please enter mobile";
-        } else {
-            $params['mobile'] = clean($params['mobile']);
-        }
-        if (!$username) {
-            $error['username'] = "Please enter username";
-        }
-        if (!$password) {
-            $error['password'] = "Please enter password";
-        }
-        if (!$code) {
-            $error['code'] = "Please enter User ID";
-        }
-        if (!$status) {
-            $error['status'] = "Please choose Status";
-        }
-        if (!$level_id) {
-            $error['level_id'] = "Please choose Level";
-        }
-     
-        if (empty($error)) {
-            $checkMail = $this->model->getItem(['email' => $email], ['task' => 'email']);
-            $checkMobile = $this->model->getItem(['mobile' => $mobile], ['task' => 'mobile']);
-            $checkUsername = $this->model->getItem(['username' => $username], ['task' => 'username']);
-            $checkCode = $this->model->getItem(['code' => $code], ['task' => 'code']);
-            if ($id) {
-                $item = $this->model::find($id);
-                $curentEmail = $item['email'] ?? "";
-                $curentMobile = $item['mobile'] ?? "";
-                $curentUsername = $item['username'] ?? "";
-                $curentPassword = $item['password'] ?? "";
-                $curentCode = $item['code'] ?? "";
-                if (($email != $curentEmail) && $checkMail) {
-                    $error['email'] = "Email already exists";
-                }
-                if (($mobile != $curentMobile) && $checkMobile) {
-                    $error['mobile'] = "Mobile already exists";
-                }
-                if (($username != $curentUsername) && $checkUsername) {
-                    $error['username'] = "Username already exists";
-                }
-                if (($code != $curentCode) && $checkCode) {
-                    $error['code'] = "Agent ID already exists";
-                }
-                // if($password != $curentPassword) {
-                //     $params['password'] = $password;
-                // }
-            } else {
-                if ($email && $checkMail) {
-                    $error['email'] = "Email already exists";
-                }
-                if ($mobile && $checkMobile) {
-                    $error['mobile'] = "Mobile already exists";
-                }
-                if ($username && $checkUsername) {
-                    $error['username'] = "Username already exists";
-                }
-            }
-        }
-        if (!$parent_id) {
-            $warning['parent_id'] = "Please Choose Sponsor";
+        if ($team_overrides == '') {
+            $error['team_overrides'] = "Please enter team overrides";
         }
         if (empty($error) && empty($warning)) {
-            $params['mobile'] = $mobile;
-            $params['parent_id'] = $parent_id;
-            $params['thumbnail'] = get_default_thumbnail_url();
-            $params['verify_code'] = random_verify_code();
             $status = 200;
             if ($id) {
-                if ($curentPassword != $password) {
-                    $params['password'] = md5($password);
+                if($condition_id) {
+                    $condition_license_levels['id'] = $condition_id;
+                    $this->conditionLicenceModel->saveItem($condition_license_levels,['task' => 'edit-item']);
+                }
+                else {
+                    $condition_license_levels['level_id'] = $id;
+                    $this->conditionLicenceModel->saveItem($condition_license_levels,['task' => 'add-item']);
                 }
                 $this->model->saveItem($params, ['task' => 'edit-item']);
-                $msg = "Update Agent Success";
+                $msg = "Update ranking Success";
             } else {
-                $params['token'] = md5($params['email'] . time());
-                $params['password'] = md5($password);
-                $msg = "Add Agent Success";
+                $msg = "Add ranking Success";
                 $this->model->saveItem($params, ['task' => 'add-item']);
                 $params['redirect'] = route("{$this->routeName}/index");
             }
@@ -263,10 +192,9 @@ class RankingController extends Controller
             $msg = $error;
         }
         $params['msg'] = $msg;
-        $params['status'] = $status;
         $params['error'] = $error;
         $params['warning'] = $warning;
-        $params['curentPassword'] = $curentPassword;
+        $params['status'] = $status;
         return $params;
     }
     public function updateField(Request $request)

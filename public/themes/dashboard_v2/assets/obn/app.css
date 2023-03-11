@@ -301,6 +301,45 @@ body {
     background-color: var(--color-main)!important;
     border-color: var(--color-main)!important;
 }
+.info-avatar img {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 100%!important;
+    object-fit: cover;
+}
+.list-latest > *:not(:last-child) {
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.list-latest .media-body > * {
+    font-size: 13px;
+}
+.list-latest .media > img {
+    height: 45px;
+}
+.card-body-limit-height > ul {
+    max-height: 213px;
+    overflow: auto;
+}
+.card-body-limit-height > ul::-webkit-scrollbar{width:3px}
+.card-body-limit-height > ul::-webkit-scrollbar-track{background:#f1f1f1}
+.card-body-limit-height > ul::-webkit-scrollbar-thumb{border-radius:10px;background:#ccc}
+.card-equal .card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.card-equal .card {
+    min-height: 320px;
+}
+.sponsor-avatar {
+    height: 65px;
+    object-fit: contain;
+}
 @media screen and (max-width: 767.98px) {
     #topnav .navigation-menu > li > a {
         color: #2d3b48;

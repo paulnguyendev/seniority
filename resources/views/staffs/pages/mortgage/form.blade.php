@@ -9,9 +9,9 @@
         'showButton' => '1',
         'parent' => [
             'name' => 'List of Ambassadors',
-            'url' => route("staffs/ambassadors/index"),
+            'url' => route("admin/ambassadors/index"),
         ],
-        'backUrl' => route("staffs/ambassadors/index"),
+        'backUrl' => route("admin/ambassadors/index"),
     ])
     <div class="row">
         <div class="col-md-12">

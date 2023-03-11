@@ -68,11 +68,12 @@ class Kernel extends HttpKernel
         'check.login_admin' => \Modules\Authen\Http\Middleware\CheckLoginAdmin::class,
         'check.login_agent' => \Modules\Authen\Http\Middleware\CheckLoginAgent::class,
         'check.login_staff' => \Modules\Authen\Http\Middleware\CheckStaffAgent::class,
-        'access.adminDashboard' => \Modules\Authen\Http\Middleware\AccessAdminDashboard::class,
+        'access.adminDashboard' => \App\Http\Middleware\AccessAdminDashboard::class,
         'access.userDashboard' => \Modules\Authen\Http\Middleware\AccessUserDashboard::class,
         'access.licenseAgentDashboard' => \App\Http\Middleware\AccessLicenceAgentDashboard::class,
         'access.nonLicenseAgentDashboard' => \App\Http\Middleware\AccessNonLicenceAgentDashboard::class,
         'access.staffDashboard' => \App\Http\Middleware\AccessStaffDashboard::class,
+        'access.licenseDashboard' => \App\Http\Middleware\AccessLicenseDashboard::class,
         // 'access.staffDashboard' => \Modules\Authen\Http\Middleware\AccessStaffDashboard::class,
     ];
 }
