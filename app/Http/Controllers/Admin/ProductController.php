@@ -136,6 +136,7 @@ class ProductController extends Controller
         $application_id = isset($params['application_id']) ? $params['application_id'] : "";
         $agent_id = isset($params['agent_id']) ? $params['agent_id'] : "";
         $total = isset($params['total']) ? $params['total'] : "";
+       
         $first_name = isset($params['first_name']) ? $params['first_name'] : "";
         $last_name = isset($params['last_name']) ? $params['last_name'] : "";
         $email = isset($params['email']) ? $params['email'] : "";
@@ -157,6 +158,7 @@ class ProductController extends Controller
         if (!$total) {
             $error['total'] = "Please enter Amount";
         }
+      
         if (!$application_id) {
             $warning['application_id'] = "Please choose Application Info";
         }

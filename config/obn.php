@@ -8,7 +8,6 @@ return [
         'homepage' => '',
         'code' => 'SM',
         'application_code' => 'SMA',
-      
     ],
     'license' => [
         'prefix' => 'ambassador',
@@ -30,7 +29,6 @@ return [
     ],
     'brand' => [
         'color_main' => "#04befe",
-
     ],
     'status' => [
         'setting' => [
@@ -154,7 +152,7 @@ return [
             'class' => 'badge-soft-success',
         ],
         'incomplete' => [
-            'name' => 'In Complete ',
+            'name' => 'Incomplete ',
             'class' => 'badge-soft-warning',
         ],
         'waiting_for_approval' => [
@@ -172,6 +170,26 @@ return [
         'closed' => [
             'name' => 'Closed',
             'class' => 'badge-soft-dark',
+        ],
+    ],
+    'lead' => [
+        'pending' => [
+            'name' => 'Pending',
+            'class' => 'badge-soft-warning',
+        ],
+        'active' => [
+            'name' => 'Active',
+            'class' => 'badge-soft-success',
+        ],
+    ],
+    'loans' => [
+        'complete' => [
+            'name' => 'Complete ',
+            'class' => 'badge-soft-success',
+        ],
+        'incomplete' => [
+            'name' => 'Incomplete ',
+            'class' => 'badge-soft-warning',
         ],
     ],
     'ambassador' => [

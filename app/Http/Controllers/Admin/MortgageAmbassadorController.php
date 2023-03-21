@@ -116,6 +116,7 @@ class MortgageAmbassadorController extends Controller
             $thumbnail = $item['thumbnail'] ?? get_default_thumbnail_url();
             $item['thumbnail'] = get_thumbnail_url($thumbnail);
             $item['created_at'] = date('H:i:s d-m-Y', strtotime($item['created_at']));
+            $item['route_quickLogin'] = "#";
             return $item;
         }, $data);
         $result = [

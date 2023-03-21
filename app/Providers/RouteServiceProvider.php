@@ -20,6 +20,7 @@ class RouteServiceProvider extends ServiceProvider
     public const HOME = '/home';
     protected $namespace = 'App\Http\Controllers\Ambassador';
     protected $namespaceLicense = 'App\Http\Controllers\License';
+    protected $namespaceLead = 'App\Http\Controllers\Lead';
 
     /**
      * Define your route model bindings, pattern filters, and other route configuration.
@@ -42,10 +43,15 @@ class RouteServiceProvider extends ServiceProvider
                 ->prefix(config('prefix.portal'))
                 ->namespace($this->namespace)
                 ->group(base_path('routes/ambassador.php'));
+
             Route::middleware('web')
                 ->prefix(config('prefix.portal_license'))
                 ->namespace($this->namespaceLicense)
                 ->group(base_path('routes/mortgage.php'));
+            Route::middleware('web')
+                ->prefix(config('prefix.lead'))
+                ->namespace($this->namespaceLead)
+                ->group(base_path('routes/lead.php'));
         });
     }
 

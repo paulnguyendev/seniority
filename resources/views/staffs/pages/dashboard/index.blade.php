@@ -4,6 +4,7 @@
 @endphp
 @extends('core.dashboard')
 @section('content')
+
     @if ($showAmbassadorType == 'mortgage')
         @section('page_title', 'List of Mortgage Ambassador')
         @include('share.page_title', ['showSelect' => '1', 'showAmbassadorType' => $showAmbassadorType])

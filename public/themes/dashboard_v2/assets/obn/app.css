@@ -340,6 +340,67 @@ body {
     height: 65px;
     object-fit: contain;
 }
+.card-list li {
+    list-style: none;
+}
+
+.card-list ul {
+    padding-left: 0;
+    margin-bottom: 0;
+}
+
+.card-list ul > * {
+    display: flex;
+    justify-content: space-between;
+}
+
+.card-list ul > *:not(:last-child) {
+    margin-bottom: 15px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+}
+.card-list li > .badge, .obn-badge .badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 100%;
+    width: 25px;
+    height: 25px;
+}
+.card-header-obn.obn-badge {
+    padding-right: 1.25rem;
+}
+.badge.badge-primary {
+    background: linear-gradient(to right, #17a2b8 0%, #33cdff 100%) !important
+}
+.list-level {
+    display: flex;
+    justify-content: space-between;
+    background: #fff;
+    margin-top: 30px;
+}
+
+.list-level > * {
+   
+    width: 100%;
+    text-align: center;
+}
+
+.list-level .level-item.active {
+    background: var(--color-main);
+}
+
+.list-level .level-item.active a {
+    color: #fff;
+}
+.list-level > *:hover {
+    background: #eee;
+    cursor: pointer;
+}
+.list-level > * > * {
+    display: block;
+    padding:15px;
+}
 @media screen and (max-width: 767.98px) {
     #topnav .navigation-menu > li > a {
         color: #2d3b48;

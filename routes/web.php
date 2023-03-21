@@ -11,6 +11,7 @@ use App\Http\Controllers\Agent\NonLicense\DashboardController as NonLicenseDashb
 use App\Http\Controllers\Staff\DashboardController as StaffDashboardController;
 use App\Http\Controllers\Staff\ApplicationController as StaffApplicationController;
 use App\Http\Controllers\Admin\ApplicationController as AdminApplicationController;
+use App\Http\Controllers\Admin\LeadController as AdminLeadController;
 use App\Http\Controllers\Staff\ProductController as StaffProductController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Staff\AmbassadorController as StaffAmbassadorController;
@@ -271,6 +272,20 @@ Route::prefix($prefix)->group(function () use ($prefix) {
       });
       Route::prefix('application')->controller(AdminApplicationController::class)->group(function () use ($prefix) {
          $routeName = "{$prefix}/application";
+         Route::get('/', 'index')->name($routeName . '/index');
+         Route::get('/form-lead/{id?}', 'formLead')->name($routeName . '/formLead');
+         Route::get('/form/{id?}', 'form')->name($routeName . '/form');
+         Route::get('/data', 'data')->name($routeName . '/data');
+         Route::post('/save/{id?}', 'save')->name($routeName . '/save');
+         Route::post('/updateField/{task?}/{id?}', 'updateField')->name($routeName . '/updateField');
+         Route::delete('/trash/{id}', 'trash')->name($routeName . '/trash');
+         Route::delete('/delete/{id}', 'delete')->name($routeName . '/delete');
+         Route::delete('/destroy', 'destroy')->name($routeName . '/destroy');
+         Route::delete('/trashDestroy', 'trashDestroy')->name($routeName . '/trashDestroy');
+         Route::get('/list-trash', 'trashIndex')->name($routeName . '/trashIndex');
+      });
+      Route::prefix('lead')->controller(AdminLeadController::class)->group(function () use ($prefix) {
+         $routeName = "{$prefix}/lead";
          Route::get('/', 'index')->name($routeName . '/index');
          Route::get('/form/{id?}', 'form')->name($routeName . '/form');
          Route::get('/data', 'data')->name($routeName . '/data');

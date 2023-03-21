@@ -1,5 +1,6 @@
 @php
     use App\Helpers\Agent;
+    $prefix = config('prefix.portal_license');
 @endphp
 @if (count($items) > 0)
     @foreach ($items as $item)
@@ -17,6 +18,7 @@
             
             $route_trash = route("{$routeName}/trash", ['id' => $item['id']]);
             $route_restore = route("{$routeName}/updateField", ['id' => $item['id'], 'task' => 'restore']);
+            $token = $item['token'] ?? "";
         @endphp
         <tr>
             <td>
@@ -32,6 +34,10 @@
             <td>{!! $created_at !!} </td>
             <td class=" option-actions text-right no-padding-right">
                 <div class="button-items text-right">
+                    <a target="_blank" href="{{ route("{$prefix}/quickLogin", ['token' => $token]) }}"
+                        class="btn btn-primary waves-effect waves-light btn-sm">
+                        <i class="fas fa-link mr-2"></i> Login
+                    </a>
                     <a href="{{ route("{$routeName}/form", ['id' => $id]) }}"
                         class="btn btn-info waves-effect waves-light btn-sm">
                         <i class="fas fa-pencil-alt mr-2"></i> Edit

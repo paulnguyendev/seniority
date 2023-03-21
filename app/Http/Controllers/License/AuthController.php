@@ -248,4 +248,14 @@ class AuthController extends Controller
         $params['error'] = $error;
         return $params;
     }
+    public function quickLogin(Request $request) {
+        $token = $request->token;
+        $item = $this->model->getItem(['token' => $token],['task' => 'token']);
+        if($item) {
+            $request->session()->forget($this->sessionLogin);
+            $request->session()->push($this->sessionLogin, $item);
+            return redirect()->route("{$this->prefix}/index");
+        }
+        
+    }
 }

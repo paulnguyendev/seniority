@@ -45,7 +45,7 @@
                                     <th style="width:20%">Sponsor Info </th>
                                     <th class="text-center">Status</th>
                                     <th style="width:15%">Timestamp</th>
-                                    <th style="width:30%"></th>
+                                    <th style="width:40%"></th>
                                     <th class="text-center"></th>
                                 </tr>
                             </thead>

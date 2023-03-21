@@ -60,6 +60,10 @@
                         
                     </li>
                     <li>
+                        <a href="{{ route('admin/lead/index') }}"><i class="ti-view-grid"></i>Manage
+                            Leads</a>
+                    </li>
+                    <li>
                         <a href="{{ route('admin/application/index') }}"><i class="fab fa-wpforms"></i>Manage
                             Applications</a>
                     </li>

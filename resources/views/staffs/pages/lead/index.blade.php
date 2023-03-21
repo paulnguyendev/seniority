@@ -1,33 +1,45 @@
-@push('css')
+@extends('core.dashboard')
+@section('page_title', 'List of Lead')
+@section('title', 'List of Lead')
+@section('custom_style')
     <link href="{{ asset('obn') }}/css/plugin.css" rel="stylesheet">
-@endpush
-<div class="row">
-    <div class="col-md-12">
-        <div class="card">
-            <div class="card-body">
-                <table class="table table-xlg datatable-ajax" data-source="{{ route("{$routeName}/data") }}"
-                    data-destroymulti="{{ route("{$routeName}/trashDestroy") }}">
-                    <thead>
-                        <tr>
-                            <th class="text-center" width="50"><input type="checkbox" bs-type="checkbox"
-                                    value="all" id="inputCheckAll"></th>
-                            <th width="100">Avatar</th>
-                            <th style="width:20%">Ambassador Info </th>
-                            <th style="width:20%">Sponsor Info </th>
-                            <th class="text-center">Status</th>
-                            <th>Timestamp</th>
-                            <th class="text-right"></th>
-                            <th class="text-center"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
+@endsection
+@section('content')
+    <!-- Page-Title -->
+    @include('share.page_title', [
+        'showButton' => '1',
+        'btnUrl' => route("{$routeName}/form"),
+    ])
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <table class="table table-xlg datatable-ajax" data-source="{{ route("{$routeName}/data") }}"
+                        data-destroymulti="{{ route("{$routeName}/trashDestroy") }}">
+                        <thead>
+                            <tr>
+                                <th class="text-center" width="50"><input type="checkbox" bs-type="checkbox"
+                                        value="all" id="inputCheckAll"></th>
+
+                                <th>Fullname</th>
+                                <th>Email</th>
+                                <th>Mobile</th>
+
+                                <th class="text-center">Status</th>
+                                <th>Timestamp</th>
+                                <th class="text-right"></th>
+                                <th class="text-center"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
-</div>
-@push('scripts')
+@endsection
+@section('custom_script')
     <script src="{{ asset('obn') }}/js/plugin.js"></script>
     <script src="{{ asset('obn') }}/js/notice.js"></script>
     <script src="{{ asset('obn') }}/js/wb.datatables.js"></script>
@@ -41,20 +53,11 @@
                 orderable: false,
                 searchable: false
             },
+
             {
                 data: null,
                 render: function(data) {
-                    console.log(data);
-                    return WBDatatables.showThumbnail(data.thumbnail);
-                },
-                class: "text-center no-padding-right",
-                orderable: false,
-                searchable: false
-            },
-            {
-                data: null,
-                render: function(data) {
-                    return (data.user_info) ? data.user_info : 'empty';
+                    return (data.fullname) ? data.fullname : 'empty';
                 },
                 orderable: false,
                 searchable: false
@@ -62,11 +65,20 @@
             {
                 data: null,
                 render: function(data) {
-                    return (data.sponsor_info) ? data.sponsor_info : '';
+                    return (data.email) ? data.email : 'empty';
                 },
                 orderable: false,
                 searchable: false
             },
+            {
+                data: null,
+                render: function(data) {
+                    return (data.mobile) ? data.mobile : '-';
+                },
+                orderable: false,
+                searchable: false
+            },
+
             {
                 data: null,
                 render: function(data) {
@@ -92,24 +104,15 @@
                 render: function(data) {
                     let xhtml = "";
                     xhtml += `<div class="button-items text-right">`;
-                    xhtml += `<a href="${data.route_quickLogin}" target = "_blank" class="btn btn-primary waves-effect waves-light btn-sm">
-                        <i class="fas fa-link mr-2"></i> Login
-                    </a>`;
-                    xhtml += `  <a href="${data.route_edit}" class="btn btn-info waves-effect waves-light btn-sm">
-                        <i class="fas fa-pencil-alt mr-2"></i> Edit
-                    </a>`;
-                    if (data.is_suppend == '1') {
-                        xhtml += ` <a href="${data.route_suppend}" class="btn btn-success waves-effect waves-light btn-sm suspend-user">
-                        <i class="fas fa-ban mr-2"></i> UnSuspend
-                    </a>`;
-                    } else {
-                        xhtml += ` <a href="${data.route_suppend}" class="btn btn-danger waves-effect waves-light btn-sm suspend-user">
-                        <i class="fas fa-ban mr-2"></i> Suppend
-                    </a>`;
+                    if(data.status == 'active') {
+                        xhtml += `  <a target = '_blank' href="${data.route_add_application}" class="btn btn-primary waves-effect waves-light btn-sm">
+                            <i class="ti-plus mr-2"></i> Add Application
+                        </a>`;
                     }
-                    xhtml += ` <a href="${data.route_verify}" class="btn btn-warning waves-effect waves-light btn-sm send-mail-verify">
-                        <i class="far fa-envelope mr-2"></i> Send Mail Verify
-                    </a>`;
+                  
+                    xhtml += `  <a href="${data.route_edit}" class="btn btn-info waves-effect waves-light btn-sm">
+                            <i class="fas fa-pencil-alt mr-2"></i> Edit
+                        </a>`;
                     xhtml += `</div>`;
                     return xhtml;
                 },
@@ -136,7 +139,6 @@
         };
         let productDatatables = WBDatatables.init('.datatable-ajax', columnDatas, option);
         var status = `@include("{$pathViewController}.filter_status")`;
-        var parent = `@include("{$pathViewController}.filter_parent", ['agents' => $agents])`;
         var count = `@include("{$pathViewController}.count_item", [
             'all' => [
                 'url' => route("{$routeName}/index"),
@@ -149,8 +151,8 @@
         ])`;
         WBDatatables.addFilter(count, '');
         WBDatatables.addFilter(status, 'select[name=status]');
-        WBDatatables.addFilter(parent, 'select[name=parent_id]');
+        // WBDatatables.addFilter(parent, 'select[name=parent_id]');
         WBDatatables.updateActive();
         WBDatatables.showAction();
     </script>
-@endpush
+@endsection

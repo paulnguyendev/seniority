@@ -57,10 +57,19 @@
                     <li class="has-submenu"><a href="{{ route("{$prefix}/index") }}"><i
                                 class="dripicons-device-desktop"></i>Dashboard</a>
                     </li>
-                   
-                 
-                  
-                   
+                    {{-- <li class="has-submenu"><a href="{{ route("{$prefix}/loans") }}"><i
+                                class="dripicons-device-desktop"></i>My Loans</a>
+                    </li> --}}
+                    <li class="has-submenu"><a
+                            href="{{ route("{$prefix}/downlineAmbassadors", ['slug' => 'mortgage']) }}"><i
+                                class="fas fa-user"></i>Downline Ambassadors</a>
+                    <li class="has-submenu"><a href="{{ route("{$prefix}/downlineLoans", ['slug' => 'mortgage']) }}"><i
+                                class="far fa-folder"></i>Downline Loans</a>
+                    </li>
+
+
+
+
                 </ul>
                 <!-- End navigation menu -->
             </div> <!-- end #navigation -->

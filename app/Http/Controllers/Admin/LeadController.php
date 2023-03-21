@@ -3,15 +3,16 @@ namespace App\Http\Controllers\Admin;
 use App\Helpers\Agent;
 use App\Http\Controllers\Controller;
 use App\Models\AgentLicenseModel;
-use App\Models\ApplicationModel as MainModel;
+use App\Models\LeadModel as MainModel;
 use Illuminate\Support\Facades\View;
 use Illuminate\Http\Request;
 use Modules\Agent\Entities\AgentLicense;
-class ApplicationController extends Controller
+class LeadController extends Controller
 {
-    private $pathViewController     = "staffs.pages.application";
-    private $controllerName         = "application";
-    private $routeName         = "admin/application";
+    private $pathViewController     = "staffs.pages.lead";
+    private $controllerName         = "lead";
+    private $routeName         = "admin/lead";
+    private $routeNameApplication        = "admin/application";
     private $model;
     private $agentLicenseModel;
     private $params                 = [];
@@ -47,13 +48,12 @@ class ApplicationController extends Controller
     public function form(Request $request)
     {
         $id = $request->id;
-        $module = "Application";
+        $module = "Lead";
         $title = "Add New {$module}";
         $item = [];
-        $agents = $this->agentLicenseModel->listItems([],['task' => 'list']);
         if ($id) {
             $item = $this->model::findOrFail($id);
-            $title = "Eidt New {$module}";
+            $title = "Edit New {$module}";
         }
         return view(
             "{$this->pathViewController}/form",
@@ -61,24 +61,6 @@ class ApplicationController extends Controller
                 'title' => $title,
                 'id' => $id,
                 'item' => $item,
-                'agents' => $agents,
-            ]
-        );
-    }
-    public function formLead(Request $request)
-    {
-        $id = $request->id;
-        $module = "Application";
-        $title = "Add New {$module}";
-        $item = [];
-        $agents = $this->agentLicenseModel->listItems([],['task' => 'list']);
-        return view(
-            "{$this->pathViewController}/form_lead",
-            [
-                'title' => $title,
-                'id' => $id,
-                'item' => $item,
-                'agents' => $agents,
             ]
         );
     }
@@ -110,13 +92,12 @@ class ApplicationController extends Controller
             $item['route_edit'] = route("{$this->routeName}/form", ['id' => $item['id']]);
             $item['route_remove'] = route("{$this->routeName}/trash", ['id' => $item['id']]);
             $item['route_delete'] = route("{$this->routeName}/delete", ['id' => $item['id']]);
+            $item['route_add_application'] = route("{$this->routeNameApplication}/formLead", ['id' => $item['id']]);
             $item['route_restore'] = route("{$this->routeName}/updateField", ['id' => $item['id'], 'task' => 'restore']);
             #_data
             $item['fullname'] = "{$item['first_name']} {$item['middle_name']} {$item['last_name']}";
             $item['mobile'] = show_phone($item['mobile']);
             $item['status'] = show_status($item['status']);
-            $agentId = $item['agent_id'] ?? "";
-            $item['agentInfo'] = Agent::showInfo($agentId);
             $item['created_at'] = date('H:i:s d-m-Y', strtotime($item['created_at']));
             return $item;
         }, $data);
@@ -137,7 +118,6 @@ class ApplicationController extends Controller
         $first_name = isset($params['first_name']) ? $params['first_name'] : "";
         $last_name = isset($params['last_name']) ? $params['last_name'] : "";
         $email = isset($params['email']) ? $params['email'] : "";
-        $agent_id = isset($params['agent_id']) ? $params['agent_id'] : "";
         $mobile = isset($params['mobile']) ? $params['mobile'] : "";
         $mobile = $mobile ? clean($mobile) : "";
         if (!$first_name) {
@@ -154,19 +134,15 @@ class ApplicationController extends Controller
         } else {
             $params['mobile'] = clean($params['mobile']);
         }
-        if (!$agent_id) {
-            $warning['agent_id'] = "Please choose Ambassador";
-        } 
         if (empty($error) && empty($warning)) {
             $params['mobile'] = $mobile;
-            $params['status'] = $params['status'] ? $params['status'] : "open";
             $status = 200;
             if ($id) {
                 $this->model->saveItem($params, ['task' => 'edit-item']);
-                $msg = "Update Application Success";
+                $msg = "Update Lead Success";
             } else {
                 $params['token'] = md5($params['email'] . time());
-                $msg = "Add Application Success";
+                $msg = "Add Lead Success";
                 $this->model->saveItem($params, ['task' => 'add-item']);
                 $params['redirect'] = route("{$this->routeName}/index");
             }

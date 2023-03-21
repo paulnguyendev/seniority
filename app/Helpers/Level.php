@@ -21,6 +21,7 @@ class Level
         }, $items);
         return $items;
     }
+    
     public static function getChildsOfAgent($agentId, $column = "license_level_id")
     {
         $model = new AgentLicenseModel();
@@ -193,6 +194,7 @@ class Level
                 $parentTeamOverrides = $parentLevelInfo['team_overrides'] ?? 0;
                 if ($parentTeamOverrides > 0) {
                     $totalTeamOverRides = round($parentTeamOverrides * $total / 100);
+                    $params['agent_id'] = $parent['id'];
                     $params['total'] = $totalTeamOverRides;
                     $model->saveItem($params, ['task' => 'add-item']);
                 }
@@ -200,4 +202,27 @@ class Level
         }
         return $parents;
     }
+    public static function countAmbassadorstByLevel($agentId, $levelId)
+    {
+        $model = new AgentLicenseModel();
+        $result = $model->descendantsOf($agentId)->where('level_id', $levelId)->where('status','active')->count();
+        return $result;
+    }
+    public static function countLoanstByLevel($agentId, $levelId)
+    {
+        $model = new AgentLicenseModel();
+        $downlines = $model->descendantsOf($agentId)->where('level_id', $levelId)->where('status','active');
+        $total = 0;
+        $totalLoans = 0;
+        $totalApplications = 0;
+        foreach ($downlines as $itemDownline) {
+            $ambassadorId = $itemDownline['id'];
+            $ambassador = $model::find($ambassadorId);
+            $totalApplications += $ambassador->applications()->where('status','!=','closed')->count();
+            $totalLoans += $ambassador->products()->where('status','active')->count();
+        }
+        $total = $totalApplications + $totalLoans;
+        return $total;
+    }
+    
 }

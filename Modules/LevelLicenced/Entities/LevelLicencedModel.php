@@ -1,5 +1,7 @@
 <?php
 namespace Modules\LevelLicenced\Entities;
+
+use App\Models\AgentLicenseModel;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 class LevelLicencedModel extends Model
@@ -11,7 +13,7 @@ class LevelLicencedModel extends Model
     const UPDATED_AT = 'updated_at';
     protected $fieldSearchAccepted = ['email', 'mobile', 'first_name', 'middle_name', 'last_name', 'code'];
     protected $crudNotAccepted = ['_token', 'user_id', 'sponsor_id'];
-    protected $fillable = ['name','personal_payout','team_overrides','created_at','updated_at','is_break','is_default'];
+    protected $fillable = ['name','personal_payout','team_overrides','created_at','updated_at','is_break','is_default','sort','slug'];
     // protected static function newFactory()
     // {
     //     return \Modules\User\Database\factories\UserModelFactory::new();
@@ -19,7 +21,7 @@ class LevelLicencedModel extends Model
     public function listItems($params = "", $options = "")
     {
         $result = null;
-        $query = $this->select('id', 'name','personal_payout','team_overrides','created_at','updated_at','is_break','is_default');
+        $query = $this->select('id', 'name','personal_payout','team_overrides','created_at','updated_at','is_break','is_default','sort','slug');
         if ($options['task'] == 'all') {
             if (isset($params['not_id'])) {
                 $query = $query->where('id', '!=', $params['not_id']);
@@ -39,6 +41,9 @@ class LevelLicencedModel extends Model
             }
             if (isset($params['not_id'])) {
                 $query = $query->where('id', '!=', $params['not_id']);
+            }
+            if (isset($params['is_break'])) {
+                $query = $query->where('is_break', $params['is_break']);
             }
             if(isset($params['status'])) {
                 if($params['status']) {
@@ -75,12 +80,15 @@ class LevelLicencedModel extends Model
     }
     public function getItem($params = [], $options = [])
     {
-        $query = $this->select('id', 'name','personal_payout','team_overrides','created_at','updated_at','is_break','is_default');
+        $query = $this->select('id', 'name','personal_payout','team_overrides','created_at','updated_at','is_break','is_default','sort','slug');
         if ($options['task'] == 'id') {
             $result = $query->where('id', $params['user_id'])->first();
         }
         if ($options['task'] == 'is_default') {
             $result = $query->where('is_default',1)->first();
+        }
+        if ($options['task'] == 'slug') {
+            $result = $query->where('slug',$params['slug'])->first();
         }
         return $result;
     }
@@ -107,5 +115,9 @@ class LevelLicencedModel extends Model
     public function conditionLevel()
     {
         return $this->hasMany(ConditionLicenseLevelModel::class, 'level_id', 'id');
+    }
+    public function ambassadors()
+    {
+        return $this->hasMany(AgentLicenseModel::class, 'level_id', 'id');
     }
 }

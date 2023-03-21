@@ -30,21 +30,23 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label for="code">Loans ID(*)</label>
-                                    <input type="text" class="form-control"
-                                       name="code" id="code" value="{{ $item['code'] ?? '' }}">
+                                    <input type="text" class="form-control" name="code" id="code"
+                                        value="{{ $item['code'] ?? '' }}">
                                     <span class="help-block"></span>
                                 </div>
                             </div>
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label for="total">Amount(*)</label>
-                                    <input type="number" class="form-control"
-                                        name="total" id="total" value="{{ $item['total'] ?? '' }}">
+                                    <input type="number" class="form-control" name="total" id="total"
+                                        value="{{ $item['total'] ?? '' }}">
                                     <span class="help-block"></span>
                                 </div>
                             </div>
+                          
 
                         </div>
+                       
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group">

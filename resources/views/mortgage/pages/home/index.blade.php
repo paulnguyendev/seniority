@@ -96,37 +96,68 @@
         </div>
     </div>
     <div class="row">
+        <div class="col-md-12">
+            <h5>Total Loans</h5>
+        </div>
         <div class="col-md-3">
             <div class="card text-center">
                 <div class="card-header-obn">
-                    <span>Total Ambassadors</span>
+                    <span>My Incomplete Loans</span>
                 </div>
                 <div class="card-body">
-                    <span class="font-20"> {{ $totalChilds ?? 0 }} </span>
+                    <span class="font-20"> {{ $totalLoans['totalMyIncomplete'] ?? 0 }} </span>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
             <div class="card text-center">
                 <div class="card-header-obn">
-                    <span>Total Loan</span>
+                    <span>My Complete Loans </span>
                 </div>
                 <div class="card-body">
-                    <span class="font-20"> {{ $totalProducts ?? 0 }} </span>
+                    <span class="font-20"> {{ $totalLoans['totalMyComplete'] ?? 0 }} </span>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
             <div class="card text-center">
                 <div class="card-header-obn">
-                    <span>Last Month Commission</span>
+                    <span>Downline Incomplete Loans</span>
+                </div>
+                <div class="card-body">
+                    <span class="font-20"> {{ $totalLoans['totalDownlineIncomplete'] ?? 0 }} </span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-header-obn">
+                    <span>Downline Complete Loans</span>
+                </div>
+                <div class="card-body">
+                    <span class="font-20"> {{ $totalLoans['totalDownlineComplete'] ?? 0 }} </span>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <h5>Total Commission</h5>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-header-obn">
+                    <span>Current Commission</span>
                 </div>
                 <div class="card-body">
                     <span class="font-20"> {{ show_price($commissionThisMonth) ?? 0 }} </span>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-4">
+
             <div class="card text-center">
                 <div class="card-header-obn">
                     <span>Year to Date Commission
@@ -134,6 +165,71 @@
                 </div>
                 <div class="card-body">
                     <span class="font-20"> {{ show_price($commissionAll) ?? 0 }} </span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-header-obn">
+                    <span>Commission Paid</span>
+                </div>
+                <div class="card-body">
+                    <span class="font-20"> {{ show_price($commissionPaid) ?? 0 }} </span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <h5>Downline Information</h5>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header-obn d-flex justify-content-between align-items-center obn-badge">
+                    <span>Downline Ambassadors</span>
+                    <span class="badge badge-primary">{{ $totalChilds ?? 0 }}</span>
+
+                </div>
+                <div class="card-body card-list">
+                    <ul>
+                        @foreach ($levels as $level)
+                            @php
+                                $slug = $level['slug'] ?? '';
+                                $totalAmbassador = Level::countAmbassadorstByLevel($ambassadorId, $level['id']);
+                            @endphp
+                            <li>
+                                <a
+                                    href="{{ route("{$prefix}/downlineAmbassadors", ['slug' => $slug]) }}">{{ $level['name'] ?? '' }}</a>
+                                <span class="badge badge-primary"> {{ $totalAmbassador }} </span>
+                            </li>
+                        @endforeach
+
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header-obn d-flex justify-content-between align-items-center obn-badge">
+                    <span>Downline Loans</span>
+                    <span class="badge badge-primary">{{$totalDownlineLoans}}</span>
+                </div>
+                <div class="card-body card-list">
+                    <ul>
+                        @foreach ($levels as $level)
+                            @php
+                                $slug = $level['slug'];
+                                 $totalLoans = Level::countLoanstByLevel($ambassadorId,$level['id']);
+                            @endphp
+                            <li>
+                                <a href="{{ route("{$prefix}/downlineLoans", ['slug' => $slug]) }}">{{ $level['name'] ?? '' }}</a>
+                                <span class="badge badge-primary">{{$totalLoans}}</span>
+                            </li>
+                        @endforeach
+
+                    </ul>
                 </div>
             </div>
         </div>
